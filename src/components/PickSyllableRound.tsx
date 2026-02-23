@@ -45,12 +45,12 @@ export function PickSyllableRound({
   useEffect(() => () => tts.cancel(), [tts]);
 
   const handleChoose = useCallback(
-    (chosen: Syllable) => {
+    async (chosen: Syllable) => {
       if (status !== 'idle') return;
       if (chosen === target) {
         setStatus('correct');
+        await tts.speak('Правильно');
         onCorrect(); // следующий раунд сразу, не ждём окончания TTS (в headless/части браузеров onend может не сработать)
-        tts.speak('Правильно! Молодец!');
         return;
       }
       setStatus('wrong');
