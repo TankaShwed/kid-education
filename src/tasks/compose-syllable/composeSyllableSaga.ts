@@ -1,7 +1,6 @@
 import { call, put, select, takeLatest } from 'redux-saga/effects';
-import type { SagaContext } from './rootSaga';
-import { composeSyllableSlice } from '../composeSyllableSlice';
-import type { RootState } from '../store';
+import type { SagaContext } from '@/store/sagaContext';
+import { composeSyllableSlice } from './composeSyllableSlice';
 
 const PHRASE = 'Собери слог';
 
@@ -10,7 +9,7 @@ function* playInstruction(
   context: SagaContext
 ) {
   const { tts } = context;
-  const state: RootState = yield select();
+  const state: { session: { currentRound: { type: string; target: string } | null } } = yield select();
   const round = state.session.currentRound;
   if (round?.type !== 'composeSyllable') return;
   const target = round.target.toLowerCase();

@@ -10,8 +10,8 @@ import {
   createComposeSyllableRound,
 } from '@/domain/rounds';
 import { sessionSlice } from './sessionSlice';
-import { pickSyllableSlice } from './pickSyllableSlice';
-import { composeSyllableSlice } from './composeSyllableSlice';
+import { pickSyllableSlice } from '@/tasks/pick-syllable/pickSyllableSlice';
+import { composeSyllableSlice } from '@/tasks/compose-syllable/composeSyllableSlice';
 import { rootSaga } from './sagas/rootSaga';
 import type { TTSProvider } from '@/domain/tts';
 
@@ -52,7 +52,11 @@ export const nextRound = (): AppThunk => (dispatch, getState) => {
 
 /** Запуск саг (передать TTS после создания store). */
 export function runSagas(tts: TTSProvider) {
-  sagaMiddleware.run(rootSaga, { tts, store });
+  sagaMiddleware.run(rootSaga, {
+    tts,
+    store,
+    dispatchNextRound: () => store.dispatch(nextRound()),
+  });
 }
 
 export const useAppDispatch: () => AppDispatch = useDispatch;

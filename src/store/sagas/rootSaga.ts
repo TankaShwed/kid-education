@@ -1,13 +1,9 @@
 import { fork } from 'redux-saga/effects';
-import { pickSyllableSaga } from './pickSyllableSaga';
-import { composeSyllableSaga } from './composeSyllableSaga';
-import type { TTSProvider } from '@/domain/tts';
-import type { store } from '../store';
+import type { SagaContext } from '../sagaContext';
+import { pickSyllableSaga } from '@/tasks/pick-syllable/pickSyllableSaga';
+import { composeSyllableSaga } from '@/tasks/compose-syllable/composeSyllableSaga';
 
-export interface SagaContext {
-  tts: TTSProvider;
-  store: typeof store;
-}
+export type { SagaContext } from '../sagaContext';
 
 export function* rootSaga(context: SagaContext) {
   yield fork(pickSyllableSaga, context);

@@ -1,8 +1,7 @@
 import { call, put, select, takeLatest } from 'redux-saga/effects';
 import { SYLLABLE_RATE } from '@/domain/tts';
-import type { SagaContext } from './rootSaga';
-import { pickSyllableSlice } from '../pickSyllableSlice';
-import { nextRound, type RootState } from '../store';
+import type { SagaContext } from '@/store/sagaContext';
+import { pickSyllableSlice } from './pickSyllableSlice';
 
 const PHRASE = 'Выбери слог';
 
@@ -11,7 +10,7 @@ function* playInstruction(
   context: SagaContext
 ) {
   const { tts } = context;
-  const state: RootState = yield select();
+  const state: { session: { currentRound: { type: string; target: string } | null } } = yield select();
   const round = state.session.currentRound;
   if (round?.type !== 'pickSyllable') return;
   const syllable = round.target.toLowerCase();
@@ -49,13 +48,13 @@ function* playCorrectAndNextRound(
   _action: unknown,
   context: SagaContext
 ) {
-  const { tts, store } = context;
+  const { tts, dispatchNextRound } = context;
   try {
     yield call([tts, tts.speak], 'Правильно');
   } catch {
     // ignore
   }
-  store.dispatch(nextRound());
+  dispatchNextRound();
 }
 
 export function* pickSyllableSaga(context: SagaContext) {

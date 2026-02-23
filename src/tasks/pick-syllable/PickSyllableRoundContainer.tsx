@@ -2,7 +2,7 @@ import { useCallback, useEffect } from 'react';
 import type { Syllable } from '@/domain/types';
 import { PickSyllableRoundView } from './PickSyllableRoundView';
 import { useAppDispatch, useAppSelector } from '@/store/store';
-import { pickSyllableSlice } from '@/store/pickSyllableSlice';
+import { pickSyllableSlice } from './pickSyllableSlice';
 
 /** Контейнер «Выбери слог»: Redux + сага (TTS). */
 export function PickSyllableRoundContainer() {
