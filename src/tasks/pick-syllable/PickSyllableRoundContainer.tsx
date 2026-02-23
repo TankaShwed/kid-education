@@ -33,13 +33,6 @@ export function PickSyllableRoundContainer() {
     [dispatch, status, round]
   );
 
-  useEffect(
-    () => () => {
-      // Отмена TTS при размонтировании — сага не отменяет сама, можно добавить cancel в сагу по setRound
-    },
-    []
-  );
-
   if (!round) return null;
 
   return (
