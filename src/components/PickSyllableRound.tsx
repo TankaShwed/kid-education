@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback } from 'react'
 import type { PickSyllableRound as Round, Syllable } from '@/domain/types'
 import type { TTSProvider } from '@/domain/tts'
+import { SYLLABLE_RATE } from '@/domain/tts'
 
 const PHRASE = 'Выбери слог'
 
@@ -27,9 +28,12 @@ export function PickSyllableRound({
   const target = round.target
 
   const speakTask = useCallback(() => {
-    const text = `${PHRASE} ${target.toLowerCase()}`
     setSpoken(false)
-    tts.speak(text).then(() => setSpoken(true))
+    const syllable = target.toLowerCase()
+    tts
+      .speak(PHRASE)
+      .then(() => tts.speak(syllable, { rate: SYLLABLE_RATE }))
+      .then(() => setSpoken(true))
   }, [target, tts])
 
   useEffect(() => {
@@ -51,10 +55,15 @@ export function PickSyllableRound({
         hintOnWrong && chosen.length >= 2
           ? ` ${chosen.toLowerCase()} — это ${chosen[0]!.toLowerCase()} и ${chosen[1]!.toLowerCase()}.`
           : ''
-      tts.speak(`Это слог ${chosen.toLowerCase()}.${hint}`).then(() => {
-        setOptions((prev) => prev.filter((s) => s !== chosen))
-        setStatus('idle')
-      })
+      const syllable = chosen.toLowerCase()
+      tts
+        .speak('Это слог ')
+        .then(() => tts.speak(syllable, { rate: SYLLABLE_RATE }))
+        .then(() => (hint ? tts.speak(hint.trim()) : Promise.resolve()))
+        .then(() => {
+          setOptions((prev) => prev.filter((s) => s !== chosen))
+          setStatus('idle')
+        })
     },
     [target, status, tts, onCorrect, onWrong, hintOnWrong]
   )
