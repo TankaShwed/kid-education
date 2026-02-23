@@ -72,6 +72,21 @@
   margin-bottom: 1.5rem;
 }
 
+.pick-syllable-round .start-button {
+  padding: 1rem 2rem;
+  font-size: 1.25rem;
+  font-weight: 600;
+  border: 2px solid #333;
+  border-radius: 12px;
+  background: #e8f4fc;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.pick-syllable-round .start-button:hover {
+  background: #cce8f9;
+}
+
 .pick-syllable-round .options {
   display: flex;
   flex-wrap: wrap;

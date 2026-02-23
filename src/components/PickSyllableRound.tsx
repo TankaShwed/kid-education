@@ -24,6 +24,7 @@ export function PickSyllableRound({
   const [options, setOptions] = useState<Syllable[]>(round.options);
   const [status, setStatus] = useState<'idle' | 'correct' | 'wrong'>('idle');
   const [spoken, setSpoken] = useState(false);
+  const [hasStarted, setHasStarted] = useState(false);
 
   const target = round.target;
 
@@ -36,10 +37,12 @@ export function PickSyllableRound({
       .then(() => setSpoken(true));
   }, [target, tts]);
 
-  useEffect(() => {
-    queueMicrotask(() => speakTask());
-    return () => tts.cancel();
-  }, [speakTask, tts]);
+  const handleStart = useCallback(() => {
+    setHasStarted(true);
+    speakTask();
+  }, [speakTask]);
+
+  useEffect(() => () => tts.cancel(), [tts]);
 
   const handleChoose = useCallback(
     (chosen: Syllable) => {
@@ -73,21 +76,34 @@ export function PickSyllableRound({
       <p className="instruction">
         Выбери слог <strong>{target}</strong>
       </p>
-      <div className="options" role="group" aria-label="Варианты слогов">
-        {options.map((syllable) => (
-          <button
-            key={syllable}
-            type="button"
-            className="syllable-button"
-            onClick={() => handleChoose(syllable)}
-            disabled={status !== 'idle'}
-            aria-pressed={status === 'correct' ? undefined : false}
-          >
-            {syllable}
-          </button>
-        ))}
-      </div>
-      {!spoken && <p className="hint">Слушай задание…</p>}
+      {!hasStarted ? (
+        <button
+          type="button"
+          className="start-button"
+          onClick={handleStart}
+          aria-label="Начать задание"
+        >
+          Начать
+        </button>
+      ) : (
+        <>
+          <div className="options" role="group" aria-label="Варианты слогов">
+            {options.map((syllable) => (
+              <button
+                key={syllable}
+                type="button"
+                className="syllable-button"
+                onClick={() => handleChoose(syllable)}
+                disabled={status !== 'idle'}
+                aria-pressed={status === 'correct' ? undefined : false}
+              >
+                {syllable}
+              </button>
+            ))}
+          </div>
+          {!spoken && <p className="hint">Слушай задание…</p>}
+        </>
+      )}
     </div>
   );
 }

@@ -8,9 +8,14 @@ test.describe('Выбери слог', () => {
     ).toBeVisible();
   });
 
-  test('есть кнопка сложности и варианты слогов', async ({ page }) => {
+  test('есть кнопка сложности и кнопка Начать, после клика — варианты слогов', async ({
+    page,
+  }) => {
     await page.goto('/');
     await expect(page.getByRole('button', { name: /Сложность/ })).toBeVisible();
+    const startBtn = page.getByRole('button', { name: 'Начать' });
+    await expect(startBtn).toBeVisible();
+    await startBtn.click();
     const options = page.getByRole('group', { name: 'Варианты слогов' });
     await expect(options).toBeVisible();
     const buttons = options.getByRole('button');
@@ -21,6 +26,7 @@ test.describe('Выбери слог', () => {
     page,
   }) => {
     await page.goto('/');
+    await page.getByRole('button', { name: 'Начать' }).click();
     const group = page.getByRole('group', { name: 'Варианты слогов' });
     await expect(group).toBeVisible();
     const instruction = page.getByText(/Выбери слог/);
