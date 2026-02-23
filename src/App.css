@@ -1,7 +1,10 @@
 .app {
   min-height: 100vh;
   padding: 1rem;
-  font-family: system-ui, -apple-system, sans-serif;
+  font-family:
+    system-ui,
+    -apple-system,
+    sans-serif;
 }
 
 .header {
@@ -85,7 +88,9 @@
   border-radius: 12px;
   background: #fff;
   cursor: pointer;
-  transition: transform 0.1s, background 0.15s;
+  transition:
+    transform 0.1s,
+    background 0.15s;
 }
 
 .syllable-button:hover:not(:disabled) {

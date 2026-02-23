@@ -29,8 +29,12 @@ npm run dev          # http://localhost:5173
 npm run build        # выход в dist/
 npm run preview      # просмотр собранного приложения
 
-# Типы
+# Типы и код
 npm run typecheck
+npm run lint          # ESLint
+npm run lint:fix      # ESLint с автоисправлением
+npm run format:check  # проверка форматирования (Prettier)
+npm run format:write  # форматирование всех файлов
 
 # Storybook
 npm run storybook    # http://localhost:6006

@@ -1,8 +1,8 @@
-import type { Meta, StoryObj } from '@storybook/react'
-import { PickSyllableRound } from './PickSyllableRound'
-import { createBrowserTTS } from '@/domain/tts'
+import type { Meta, StoryObj } from '@storybook/react';
+import { PickSyllableRound } from './PickSyllableRound';
+import { createBrowserTTS } from '@/domain/tts';
 
-const tts = createBrowserTTS()
+const tts = createBrowserTTS();
 
 const meta: Meta<typeof PickSyllableRound> = {
   component: PickSyllableRound,
@@ -11,10 +11,10 @@ const meta: Meta<typeof PickSyllableRound> = {
     tts,
     onCorrect: () => {},
   },
-}
-export default meta
+};
+export default meta;
 
-type Story = StoryObj<typeof PickSyllableRound>
+type Story = StoryObj<typeof PickSyllableRound>;
 
 export const Default: Story = {
   args: {
@@ -24,7 +24,7 @@ export const Default: Story = {
       options: ['НО', 'НА', 'КА', 'КУ', 'НУ'],
     },
   },
-}
+};
 
 export const ThreeOptions: Story = {
   args: {
@@ -34,4 +34,4 @@ export const ThreeOptions: Story = {
       options: ['МА', 'МО', 'МУ'],
     },
   },
-}
+};
