@@ -1,4 +1,4 @@
-import { useCallback, useEffect } from 'react';
+import { useCallback } from 'react';
 import type { Syllable } from '@/domain/types';
 import { PickSyllableRoundView } from './PickSyllableRoundView';
 import { useAppDispatch, useAppSelector } from '@/store/store';
