@@ -1,53 +1,45 @@
-import { useState, useCallback } from 'react';
-import { createBrowserTTS } from '@/domain/tts';
+import { useState, useEffect } from 'react';
 import {
-  createPickSyllableRound,
-  createComposeSyllableRound,
-} from '@/domain/rounds';
-import type { Round, DifficultyLevel, TaskType } from '@/domain/types';
-import { PickSyllableRound } from '@/components/PickSyllableRound';
-import { ComposeSyllableRound } from '@/components/ComposeSyllableRound';
+  useAppDispatch,
+  useAppSelector,
+  nextRound,
+  sessionSlice,
+} from '@/store';
+import { PickSyllableRoundContainer } from '@/tasks/pick-syllable';
+import { ComposeSyllableRoundContainer } from '@/tasks/compose-syllable';
 import { DifficultyPicker } from '@/components/DifficultyPicker';
+import { createBrowserTTS } from '@/domain/tts';
 import './App.css';
 
 const TTS = createBrowserTTS();
 
-function createRound(taskType: TaskType, difficulty: DifficultyLevel): Round {
-  if (taskType === 'pickSyllable') {
-    return createPickSyllableRound(difficulty);
-  }
-  return createComposeSyllableRound();
-}
-
 export default function App() {
-  const [taskType, setTaskType] = useState<TaskType>('pickSyllable');
-  const [difficulty, setDifficulty] = useState<DifficultyLevel>(4);
-  const [round, setRound] = useState<Round | null>(() =>
-    createRound('pickSyllable', 4)
-  );
-  const [roundKey, setRoundKey] = useState(0);
+  const dispatch = useAppDispatch();
+  const taskType = useAppSelector((s) => s.session.taskType);
+  const difficulty = useAppSelector((s) => s.session.difficulty);
+  const currentRound = useAppSelector((s) => s.session.currentRound);
+  const roundKey = useAppSelector((s) => s.session.roundKey);
   const [showDifficulty, setShowDifficulty] = useState(false);
 
-  const nextRound = useCallback(() => {
-    setRound(createRound(taskType, difficulty));
-    setRoundKey((k) => k + 1);
-  }, [taskType, difficulty]);
+  useEffect(() => {
+    if (currentRound === null) {
+      dispatch(nextRound());
+    }
+  }, [currentRound, dispatch]);
 
-  const handleCorrect = useCallback(() => {
-    nextRound();
-  }, [nextRound]);
+  const switchTask = (type: typeof taskType) => {
+    dispatch(sessionSlice.actions.setTaskType(type));
+    dispatch(nextRound());
+    setShowDifficulty(false);
+  };
 
-  const switchTask = useCallback(
-    (type: TaskType) => {
-      setTaskType(type);
-      setRound(createRound(type, difficulty));
-      setRoundKey((k) => k + 1);
-      setShowDifficulty(false);
-    },
-    [difficulty]
-  );
+  const handleDifficultyChange = (v: typeof difficulty) => {
+    dispatch(sessionSlice.actions.setDifficulty(v));
+    setShowDifficulty(false);
+    dispatch(nextRound());
+  };
 
-  if (round === null) return null;
+  if (currentRound === null) return null;
 
   return (
     <div className="app" data-testid="app">
@@ -85,34 +77,18 @@ export default function App() {
             {showDifficulty && (
               <DifficultyPicker
                 value={difficulty}
-                onChange={(v) => {
-                  setDifficulty(v);
-                  setShowDifficulty(false);
-                  setRound(createRound(taskType, v));
-                  setRoundKey((k) => k + 1);
-                }}
+                onChange={handleDifficultyChange}
               />
             )}
           </>
         )}
       </header>
       <main className="main" data-testid="main">
-        {round.type === 'pickSyllable' && (
-          <PickSyllableRound
-            key={roundKey}
-            round={round}
-            tts={TTS}
-            onCorrect={handleCorrect}
-            hintOnWrong={true}
-          />
+        {currentRound.type === 'pickSyllable' && (
+          <PickSyllableRoundContainer key={roundKey} />
         )}
-        {round.type === 'composeSyllable' && (
-          <ComposeSyllableRound
-            key={roundKey}
-            round={round}
-            tts={TTS}
-            onCorrect={handleCorrect}
-          />
+        {currentRound.type === 'composeSyllable' && (
+          <ComposeSyllableRoundContainer key={roundKey} tts={TTS} />
         )}
       </main>
     </div>

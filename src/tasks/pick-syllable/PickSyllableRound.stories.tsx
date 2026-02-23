@@ -6,7 +6,7 @@ const tts = createBrowserTTS();
 
 const meta: Meta<typeof PickSyllableRound> = {
   component: PickSyllableRound,
-  title: 'PickSyllableRound',
+  title: 'tasks/PickSyllableRound',
   args: {
     tts,
     onCorrect: () => {},

@@ -4,7 +4,7 @@ import type { TTSProvider } from '@/domain/tts';
 
 const PHRASE = 'Собери слог';
 
-interface ComposeSyllableRoundProps {
+export interface ComposeSyllableRoundProps {
   round: Round;
   tts: TTSProvider;
   onCorrect: () => void;
@@ -12,6 +12,7 @@ interface ComposeSyllableRoundProps {
 
 type DragSource = { kind: 'pool' } | { kind: 'slot'; index: number };
 
+/** Презентационный компонент раунда «Собери слог» (для Storybook и контейнера). */
 export function ComposeSyllableRound({
   round,
   tts,
@@ -105,8 +106,8 @@ export function ComposeSyllableRound({
       } else {
         setSlots((prev) => {
           const next = [...prev];
-          const fromLetter = prev[source.index];
-          next[source.index] = prev[slotIndex];
+          const fromLetter = prev[source.index] ?? null;
+          next[source.index] = prev[slotIndex] ?? null;
           next[slotIndex] = fromLetter;
           setTimeout(() => checkAndHandleComplete(next), 0);
           return next;

@@ -6,7 +6,7 @@ const tts = createBrowserTTS();
 
 const meta: Meta<typeof ComposeSyllableRound> = {
   component: ComposeSyllableRound,
-  title: 'ComposeSyllableRound',
+  title: 'tasks/ComposeSyllableRound',
   args: {
     tts,
     onCorrect: () => {},

@@ -2,18 +2,19 @@ import { useState, useEffect, useCallback } from 'react';
 import type { PickSyllableRound as Round, Syllable } from '@/domain/types';
 import type { TTSProvider } from '@/domain/tts';
 import { SYLLABLE_RATE } from '@/domain/tts';
+import { PickSyllableRoundView } from './PickSyllableRoundView';
 
 const PHRASE = 'Выбери слог';
 
-interface PickSyllableRoundProps {
+export interface PickSyllableRoundProps {
   round: Round;
   tts: TTSProvider;
   onCorrect: () => void;
   onWrong?: (chosen: Syllable) => void;
-  /** Подсказка при ошибке: «X — это Y и Z» (следующая итерация можно включить) */
   hintOnWrong?: boolean;
 }
 
+/** Презентационный компонент с локальным state и TTS (для Storybook). */
 export function PickSyllableRound({
   round,
   tts,
@@ -50,7 +51,7 @@ export function PickSyllableRound({
       if (chosen === target) {
         setStatus('correct');
         await tts.speak('Правильно');
-        onCorrect(); // следующий раунд сразу, не ждём окончания TTS (в headless/части браузеров onend может не сработать)
+        onCorrect();
         return;
       }
       setStatus('wrong');
@@ -73,45 +74,14 @@ export function PickSyllableRound({
   );
 
   return (
-    <div className="pick-syllable-round" data-testid="pick-syllable-round">
-      <p className="instruction" data-testid="pick-syllable-instruction">
-        Выбери слог <strong>{target}</strong>
-      </p>
-      {!hasStarted ? (
-        <button
-          type="button"
-          className="start-button"
-          onClick={handleStart}
-          aria-label="Начать задание"
-          data-testid="pick-syllable-start"
-        >
-          Начать
-        </button>
-      ) : (
-        <>
-          <div
-            className="options"
-            role="group"
-            aria-label="Варианты слогов"
-            data-testid="pick-syllable-options"
-          >
-            {options.map((syllable) => (
-              <button
-                key={syllable}
-                type="button"
-                className="syllable-button"
-                onClick={() => handleChoose(syllable)}
-                disabled={status !== 'idle'}
-                aria-pressed={status === 'correct' ? undefined : false}
-                data-testid={`pick-syllable-option-${syllable}`}
-              >
-                {syllable}
-              </button>
-            ))}
-          </div>
-          {!spoken && <p className="hint">Слушай задание…</p>}
-        </>
-      )}
-    </div>
+    <PickSyllableRoundView
+      round={round}
+      options={options}
+      status={status}
+      hasStarted={hasStarted}
+      spoken={spoken}
+      onStart={handleStart}
+      onChoose={handleChoose}
+    />
   );
 }
