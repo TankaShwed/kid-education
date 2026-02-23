@@ -25,10 +25,12 @@ export default function App() {
   const [round, setRound] = useState<Round | null>(() =>
     createRound('pickSyllable', 4)
   );
+  const [roundKey, setRoundKey] = useState(0);
   const [showDifficulty, setShowDifficulty] = useState(false);
 
   const nextRound = useCallback(() => {
     setRound(createRound(taskType, difficulty));
+    setRoundKey((k) => k + 1);
   }, [taskType, difficulty]);
 
   const handleCorrect = useCallback(() => {
@@ -39,6 +41,7 @@ export default function App() {
     (type: TaskType) => {
       setTaskType(type);
       setRound(createRound(type, difficulty));
+      setRoundKey((k) => k + 1);
       setShowDifficulty(false);
     },
     [difficulty]
@@ -86,6 +89,7 @@ export default function App() {
                   setDifficulty(v);
                   setShowDifficulty(false);
                   setRound(createRound(taskType, v));
+                  setRoundKey((k) => k + 1);
                 }}
               />
             )}
@@ -95,6 +99,7 @@ export default function App() {
       <main className="main" data-testid="main">
         {round.type === 'pickSyllable' && (
           <PickSyllableRound
+            key={roundKey}
             round={round}
             tts={TTS}
             onCorrect={handleCorrect}
@@ -103,6 +108,7 @@ export default function App() {
         )}
         {round.type === 'composeSyllable' && (
           <ComposeSyllableRound
+            key={roundKey}
             round={round}
             tts={TTS}
             onCorrect={handleCorrect}
