@@ -28,12 +28,20 @@ export function createBrowserTTS(): TTSProvider {
           reject(new Error('SpeechSynthesis not supported'));
           return;
         }
-        window.speechSynthesis.cancel();
+        // Не вызываем cancel() здесь: в ряде браузеров это мешает воспроизведению.
+        // Отмена только через явный вызов cancel() (например, в cleanup при смене раунда).
         const u = new SpeechSynthesisUtterance(text);
         u.lang = 'ru-RU';
         u.rate = options?.rate ?? DEFAULT_RATE;
         u.onend = () => resolve();
-        u.onerror = (e) => reject(e);
+        u.onerror = (e) => {
+          // Отмена (при смене раунда/размонтировании) не считаем ошибкой
+          if (e.error === 'canceled') {
+            resolve();
+          } else {
+            reject(e);
+          }
+        };
         window.speechSynthesis.speak(u);
       });
     },

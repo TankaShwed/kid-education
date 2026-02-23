@@ -16,8 +16,14 @@ export interface PickSyllableTaskConfig {
   optionsCount: DifficultyLevel;
 }
 
+/** Конфигурация задания «собери слог» (drag-and-drop букв в слоты) */
+export interface ComposeSyllableTaskConfig {
+  type: 'composeSyllable';
+  /** Пока без параметров сложности; позже — лишние буквы-дистракторы */
+}
+
 /** Общий тип конфигурации задания (расширяется другими типами) */
-export type TaskConfig = PickSyllableTaskConfig;
+export type TaskConfig = PickSyllableTaskConfig | ComposeSyllableTaskConfig;
 
 /** Идентификатор типа задания для микса в будущем */
 export type TaskType = TaskConfig['type'];
@@ -31,7 +37,16 @@ export interface PickSyllableRound {
   options: Syllable[];
 }
 
-export type Round = PickSyllableRound;
+/** Раунд задания «собери слог»: буквы разбросаны, в центре слоты для слога */
+export interface ComposeSyllableRound {
+  type: 'composeSyllable';
+  /** Слог, который нужно собрать, напр. "НО" */
+  target: Syllable;
+  /** Буквы для перетаскивания (обычно target.split(''), можно добавить дистракторы) */
+  letters: string[];
+}
+
+export type Round = PickSyllableRound | ComposeSyllableRound;
 
 /** Результат попытки в раунде */
 export type AttemptResult =

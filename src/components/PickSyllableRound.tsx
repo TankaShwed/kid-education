@@ -31,6 +31,7 @@ export function PickSyllableRound({
   const speakTask = useCallback(() => {
     setSpoken(false);
     const syllable = target.toLowerCase();
+    console.log('speakTask', syllable);
     tts
       .speak(PHRASE)
       .then(() => tts.speak(syllable, { rate: SYLLABLE_RATE }))
