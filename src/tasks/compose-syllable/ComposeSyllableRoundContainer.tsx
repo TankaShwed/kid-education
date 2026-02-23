@@ -12,11 +12,10 @@ export function ComposeSyllableRoundContainer({
   tts,
 }: ComposeSyllableRoundContainerProps) {
   const dispatch = useAppDispatch();
-  const round = useAppSelector(
-    (s) =>
-      s.session.currentRound?.type === 'composeSyllable'
-        ? s.session.currentRound
-        : null
+  const round = useAppSelector((s) =>
+    s.session.currentRound?.type === 'composeSyllable'
+      ? s.session.currentRound
+      : null
   );
 
   const handleCorrect = useCallback(() => {
@@ -26,10 +25,6 @@ export function ComposeSyllableRoundContainer({
   if (!round) return null;
 
   return (
-    <ComposeSyllableRound
-      round={round}
-      tts={tts}
-      onCorrect={handleCorrect}
-    />
+    <ComposeSyllableRound round={round} tts={tts} onCorrect={handleCorrect} />
   );
 }

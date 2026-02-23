@@ -5,12 +5,11 @@ import { pickSyllableSlice } from './pickSyllableSlice';
 
 const PHRASE = 'Выбери слог';
 
-function* playInstruction(
-  _action: unknown,
-  context: SagaContext
-) {
+function* playInstruction(_action: unknown, context: SagaContext) {
   const { tts } = context;
-  const state: { session: { currentRound: { type: string; target: string } | null } } = yield select();
+  const state: {
+    session: { currentRound: { type: string; target: string } | null };
+  } = yield select();
   const round = state.session.currentRound;
   if (round?.type !== 'pickSyllable') return;
   const syllable = round.target.toLowerCase();
@@ -44,10 +43,7 @@ function* playWrongFeedback(
   }
 }
 
-function* playCorrectAndNextRound(
-  _action: unknown,
-  context: SagaContext
-) {
+function* playCorrectAndNextRound(_action: unknown, context: SagaContext) {
   const { tts, dispatchNextRound } = context;
   try {
     yield call([tts, tts.speak], 'Правильно');

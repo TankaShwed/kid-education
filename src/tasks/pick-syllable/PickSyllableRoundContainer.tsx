@@ -7,11 +7,10 @@ import { pickSyllableSlice } from './pickSyllableSlice';
 /** Контейнер «Выбери слог»: Redux + сага (TTS). */
 export function PickSyllableRoundContainer() {
   const dispatch = useAppDispatch();
-  const round = useAppSelector(
-    (s) =>
-      s.session.currentRound?.type === 'pickSyllable'
-        ? s.session.currentRound
-        : null
+  const round = useAppSelector((s) =>
+    s.session.currentRound?.type === 'pickSyllable'
+      ? s.session.currentRound
+      : null
   );
   const { options, status, hasStarted, spoken } = useAppSelector(
     (s) => s.pickSyllable

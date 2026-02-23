@@ -44,10 +44,7 @@ export const composeSyllableSlice = createSlice({
     setPool(state, action: PayloadAction<string[]>) {
       state.pool = action.payload;
     },
-    setStatus(
-      state,
-      action: PayloadAction<'idle' | 'correct' | 'wrong'>
-    ) {
+    setStatus(state, action: PayloadAction<'idle' | 'correct' | 'wrong'>) {
       state.status = action.payload;
     },
   },

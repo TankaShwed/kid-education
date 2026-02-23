@@ -2,6 +2,7 @@ export {
   store,
   nextRound,
   runSagas,
+  createStoreForStory,
   useAppDispatch,
   useAppSelector,
 } from './store';

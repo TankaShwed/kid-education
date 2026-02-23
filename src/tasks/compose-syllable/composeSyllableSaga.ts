@@ -4,12 +4,11 @@ import { composeSyllableSlice } from './composeSyllableSlice';
 
 const PHRASE = 'Собери слог';
 
-function* playInstruction(
-  _action: unknown,
-  context: SagaContext
-) {
+function* playInstruction(_action: unknown, context: SagaContext) {
   const { tts } = context;
-  const state: { session: { currentRound: { type: string; target: string } | null } } = yield select();
+  const state: {
+    session: { currentRound: { type: string; target: string } | null };
+  } = yield select();
   const round = state.session.currentRound;
   if (round?.type !== 'composeSyllable') return;
   const target = round.target.toLowerCase();

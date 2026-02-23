@@ -34,6 +34,26 @@ export const store = configureStore({
     getDefaultMiddleware({ thunk: true }).concat(sagaMiddleware),
 });
 
+/** Создать отдельный store с сагами (для Storybook). Начальное состояние задаётся dispatch после создания. */
+export function createStoreForStory(tts: TTSProvider) {
+  const storySagaMiddleware = createSagaMiddleware();
+  const storyStore = configureStore({
+    reducer: {
+      session: sessionSlice.reducer,
+      pickSyllable: pickSyllableSlice.reducer,
+      composeSyllable: composeSyllableSlice.reducer,
+    },
+    middleware: (getDefaultMiddleware) =>
+      getDefaultMiddleware({ thunk: true }).concat(storySagaMiddleware),
+  });
+  storySagaMiddleware.run(rootSaga, {
+    tts,
+    store: storyStore,
+    dispatchNextRound: () => storyStore.dispatch(nextRound()),
+  });
+  return storyStore;
+}
+
 export type RootState = ReturnType<typeof store.getState>;
 export type AppDispatch = typeof store.dispatch;
 export type AppThunk = ThunkAction<void, RootState, unknown, UnknownAction>;
