@@ -27,7 +27,7 @@ export function PickSyllableRound({
   const target = round.target
 
   const speakTask = useCallback(() => {
-    const text = `${PHRASE} ${target}`
+    const text = `${PHRASE} ${target.toLowerCase()}`
     setSpoken(false)
     tts.speak(text).then(() => setSpoken(true))
   }, [target, tts])
@@ -47,10 +47,11 @@ export function PickSyllableRound({
       }
       setStatus('wrong')
       onWrong?.(chosen)
-      const hint = hintOnWrong && chosen.length >= 2
-        ? ` ${chosen} — это ${chosen[0]} и ${chosen[1]}.`
-        : ''
-      tts.speak(`Это слог ${chosen}.${hint}`).then(() => {
+      const hint =
+        hintOnWrong && chosen.length >= 2
+          ? ` ${chosen.toLowerCase()} — это ${chosen[0]!.toLowerCase()} и ${chosen[1]!.toLowerCase()}.`
+          : ''
+      tts.speak(`Это слог ${chosen.toLowerCase()}.${hint}`).then(() => {
         setOptions((prev) => prev.filter((s) => s !== chosen))
         setStatus('idle')
       })
