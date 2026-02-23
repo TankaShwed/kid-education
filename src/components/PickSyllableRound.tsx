@@ -28,6 +28,12 @@ export function PickSyllableRound({
 
   const target = round.target;
 
+  useEffect(() => {
+    setHasStarted(false);
+    setOptions(round.options);
+    setStatus('idle');
+  }, [round.target, round.options]);
+
   const speakTask = useCallback(() => {
     setSpoken(false);
     const syllable = target.toLowerCase();
@@ -50,7 +56,8 @@ export function PickSyllableRound({
       if (status !== 'idle') return;
       if (chosen === target) {
         setStatus('correct');
-        tts.speak('Правильно! Молодец!').then(() => onCorrect());
+        onCorrect(); // следующий раунд сразу, не ждём окончания TTS (в headless/части браузеров onend может не сработать)
+        tts.speak('Правильно! Молодец!');
         return;
       }
       setStatus('wrong');
@@ -73,8 +80,8 @@ export function PickSyllableRound({
   );
 
   return (
-    <div className="pick-syllable-round">
-      <p className="instruction">
+    <div className="pick-syllable-round" data-testid="pick-syllable-round">
+      <p className="instruction" data-testid="pick-syllable-instruction">
         Выбери слог <strong>{target}</strong>
       </p>
       {!hasStarted ? (
@@ -83,12 +90,18 @@ export function PickSyllableRound({
           className="start-button"
           onClick={handleStart}
           aria-label="Начать задание"
+          data-testid="pick-syllable-start"
         >
           Начать
         </button>
       ) : (
         <>
-          <div className="options" role="group" aria-label="Варианты слогов">
+          <div
+            className="options"
+            role="group"
+            aria-label="Варианты слогов"
+            data-testid="pick-syllable-options"
+          >
             {options.map((syllable) => (
               <button
                 key={syllable}
@@ -97,6 +110,7 @@ export function PickSyllableRound({
                 onClick={() => handleChoose(syllable)}
                 disabled={status !== 'idle'}
                 aria-pressed={status === 'correct' ? undefined : false}
+                data-testid={`pick-syllable-option-${syllable}`}
               >
                 {syllable}
               </button>

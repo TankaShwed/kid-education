@@ -46,7 +46,8 @@ export function ComposeSyllableRound({
       const composed = newSlots.join('');
       if (composed === target) {
         setStatus('correct');
-        tts.speak('Правильно! Молодец!').then(() => onCorrect());
+        onCorrect();
+        tts.speak('Правильно! Молодец!');
       } else {
         setStatus('wrong');
         tts.speak(`Это слог ${composed}. Попробуй ещё раз.`).then(() => {
@@ -141,12 +142,20 @@ export function ComposeSyllableRound({
   }, []);
 
   return (
-    <div className="compose-syllable-round">
-      <p className="instruction">
+    <div
+      className="compose-syllable-round"
+      data-testid="compose-syllable-round"
+    >
+      <p className="instruction" data-testid="compose-syllable-instruction">
         Собери слог <strong>{target}</strong>
       </p>
 
-      <div className="slots" role="group" aria-label="Слоты для слога">
+      <div
+        className="slots"
+        role="group"
+        aria-label="Слоты для слога"
+        data-testid="compose-syllable-slots"
+      >
         {slots.map((letter, index) => (
           <div
             key={`slot-${index}`}
@@ -190,6 +199,7 @@ export function ComposeSyllableRound({
         aria-label="Буквы"
         onDragOver={preventDefault}
         onDrop={handleDropOnPool}
+        data-testid="compose-syllable-pool"
       >
         {pool.map((letter, i) => (
           <span

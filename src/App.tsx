@@ -47,14 +47,15 @@ export default function App() {
   if (round === null) return null;
 
   return (
-    <div className="app">
-      <header className="header">
+    <div className="app" data-testid="app">
+      <header className="header" data-testid="app-header">
         <h1>Учимся читать</h1>
         <nav className="task-switcher" aria-label="Тип задания">
           <button
             type="button"
             className={taskType === 'pickSyllable' ? 'active' : ''}
             onClick={() => switchTask('pickSyllable')}
+            data-testid="task-pick-syllable"
           >
             Выбери слог
           </button>
@@ -62,6 +63,7 @@ export default function App() {
             type="button"
             className={taskType === 'composeSyllable' ? 'active' : ''}
             onClick={() => switchTask('composeSyllable')}
+            data-testid="task-compose-syllable"
           >
             Собери слог
           </button>
@@ -73,6 +75,7 @@ export default function App() {
               className="difficulty-trigger"
               onClick={() => setShowDifficulty((v) => !v)}
               aria-expanded={showDifficulty}
+              data-testid="difficulty-trigger"
             >
               Сложность: {difficulty} варианта
             </button>
@@ -89,7 +92,7 @@ export default function App() {
           </>
         )}
       </header>
-      <main className="main">
+      <main className="main" data-testid="main">
         {round.type === 'pickSyllable' && (
           <PickSyllableRound
             round={round}
