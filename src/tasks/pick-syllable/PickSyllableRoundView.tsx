@@ -24,7 +24,7 @@ export function PickSyllableRoundView({
 
   return (
     <div className="pick-syllable-round" data-testid="pick-syllable-round">
-      <p className="instruction" data-testid="pick-syllable-instruction">
+      <p className="instruction" data-testid="pick-syllable-instruction" style={{display: 'none'}}>
         Выбери слог <strong>{target}</strong>
       </p>
       {!hasStarted ? (

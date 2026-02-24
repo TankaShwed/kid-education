@@ -32,7 +32,7 @@ export function ComposeSyllableRound({
   const slotCount = round.target.length;
 
   const speakTask = useCallback(() => {
-    tts.speak(`${PHRASE} ${target}`);
+    tts.speak(`${PHRASE} ${target.toLowerCase()}`);
   }, [target, tts]);
 
   useEffect(() => {
