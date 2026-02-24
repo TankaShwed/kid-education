@@ -14,7 +14,8 @@
     "preview": "vite preview",
     "storybook": "storybook dev -p 6006",
     "build-storybook": "storybook build",
-    "test:e2e": "playwright test"
+    "test:e2e": "playwright test",
+    "test:e2e:debug": "DEBUG_E2E=1 playwright test --headed --workers=1"
   },
   "dependencies": {
     "@reduxjs/toolkit": "^2.11.2",
