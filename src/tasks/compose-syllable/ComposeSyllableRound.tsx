@@ -4,6 +4,13 @@ import type { TTSProvider } from '@/domain/tts';
 
 const PHRASE = 'Собери слог';
 
+/**
+ * Пропсы компонента раунда «Собери слог».
+ *
+ * @remarks
+ * round — целевой слог и буквы для перетаскивания; tts — озвучка (инструкция при монтировании, фидбек при проверке);
+ * onCorrect — колбэк при верном слоге в слотах (контейнер диспатчит nextRound).
+ */
 export interface ComposeSyllableRoundProps {
   round: Round;
   tts: TTSProvider;

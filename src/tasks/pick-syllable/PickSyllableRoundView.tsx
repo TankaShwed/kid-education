@@ -1,5 +1,12 @@
 import type { PickSyllableRound as Round, Syllable } from '@/domain/types';
 
+/**
+ * Пропсы презентационного компонента «Выбери слог».
+ *
+ * @remarks
+ * Данные раунда и состояние (options, status, hasStarted, spoken) приходят из контейнера;
+ * onStart — запуск раунда (озвучка через сагу), onChoose — выбор варианта слога.
+ */
 export interface PickSyllableRoundViewProps {
   round: Round;
   options: Syllable[];

@@ -20,6 +20,15 @@ function* playInstruction(_action: unknown, context: SagaContext) {
   }
 }
 
+/**
+ * Сага задания «Собери слог».
+ *
+ * @remarks
+ * Слушает экшен startRound — озвучивает «Собери слог» и целевой слог, диспатчит instructionDone.
+ * Переход к следующему раунду при правильном ответе пока вызывается из UI (onCorrect -> nextRound).
+ *
+ * @param context — TTS, store, dispatchNextRound (см. SagaContext)
+ */
 export function* composeSyllableSaga(context: SagaContext) {
   yield takeLatest(
     composeSyllableSlice.actions.startRound.type as never,

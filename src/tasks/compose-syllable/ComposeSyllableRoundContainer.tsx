@@ -7,7 +7,11 @@ interface ComposeSyllableRoundContainerProps {
   tts: TTSProvider;
 }
 
-/** Контейнер «Собери слог»: round и onCorrect из Redux, TTS пока в компоненте. */
+/**
+ * Контейнер задания «Собери слог»: берёт раунд из session.currentRound, передаёт TTS и onCorrect (nextRound) в компонент.
+ *
+ * @remarks Рендерится в App при currentRound.type === 'composeSyllable'. TTS передаётся снаружи (создаётся в App/main).
+ */
 export function ComposeSyllableRoundContainer({
   tts,
 }: ComposeSyllableRoundContainerProps) {

@@ -4,7 +4,12 @@ import { PickSyllableRoundView } from './PickSyllableRoundView';
 import { useAppDispatch, useAppSelector } from '@/store/store';
 import { pickSyllableSlice } from './pickSyllableSlice';
 
-/** Контейнер «Выбери слог»: Redux + сага (TTS). */
+/**
+ * Контейнер задания «Выбери слог»: подключает View к store (session.currentRound, pickSyllable)
+ * и диспатчит экшены slice. Озвучка выполняется сагой по экшенам startRound / chooseWrong / chooseCorrect.
+ *
+ * @remarks Рендерится в App при currentRound.type === 'pickSyllable'. Ключ по roundKey для сброса при новом раунде.
+ */
 export function PickSyllableRoundContainer() {
   const dispatch = useAppDispatch();
   const round = useAppSelector((s) =>

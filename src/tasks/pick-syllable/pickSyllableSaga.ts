@@ -53,6 +53,17 @@ function* playCorrectAndNextRound(_action: unknown, context: SagaContext) {
   dispatchNextRound();
 }
 
+/**
+ * Сага задания «Выбери слог».
+ *
+ * @remarks
+ * Слушает экшены slice:
+ * - `startRound` — озвучивает «Выбери слог» и целевой слог, диспатчит instructionDone.
+ * - `chooseWrong` — озвучивает фидбек по выбранному слогу, диспатчит wrongDone.
+ * - `chooseCorrect` — озвучивает «Правильно», вызывает context.dispatchNextRound().
+ *
+ * @param context — TTS, store, dispatchNextRound (см. SagaContext)
+ */
 export function* pickSyllableSaga(context: SagaContext) {
   yield takeLatest(
     pickSyllableSlice.actions.startRound.type as never,

@@ -47,9 +47,11 @@ npm run test:e2e
 
 ## Структура
 
-- `src/domain/` — типы, TTS, слоги, генерация раундов
-- `src/components/` — UI (экран «выбери слог», выбор сложности)
-- `docs/VOCABULARY.md` — словарь домена
+- `src/domain/` — типы заданий и раундов, TTS, слоги, генерация раундов
+- `src/store/` — Redux store, сессия (тип задания, раунд), саги
+- `src/tasks/<task>/` — задание: slice, сага, UI, описание в README каталога
+- `src/components/` — общие UI (экран задания, выбор сложности)
+- `docs/` — [полная документация по проекту](docs/PROJECT.md), словарь домена (VOCABULARY.md), дорожная карта (ROADMAP.md)
 - `e2e/` — тесты Playwright
 
 ## Деплой
