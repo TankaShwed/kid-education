@@ -7,8 +7,7 @@ import type { ComposeSyllableRound } from '@/domain/types';
  *
  * @remarks
  * Слоты и пул букв; status — idle / wrong / correct. hasStarted и spoken используются сагой
- * (озвучка инструкции по startRound, instructionDone). Сейчас UI в ComposeSyllableRound
- * держит копию состояния локально; slice зарезервирован для будущего переноса логики в Redux/saga.
+ * (озвучка инструкции по startRound, instructionDone). chooseCorrect/chooseWrong/wrongDone — сценарий фидбека.
  */
 export interface ComposeSyllableState {
   slots: (string | null)[];
@@ -61,6 +60,24 @@ export const composeSyllableSlice = createSlice({
     setStatus(state, action: PayloadAction<'idle' | 'correct' | 'wrong'>) {
       state.status = action.payload;
     },
+    /** Верный слог собран; сага озвучивает «Правильно» и вызывает dispatchNextRound. */
+    chooseCorrect(state) {
+      state.status = 'correct';
+    },
+    /** Неверный слог собран. Payload — собранная строка; сага озвучивает фидбек и диспатчит wrongDone. */
+    chooseWrong(state, _action: PayloadAction<string>) {
+      state.status = 'wrong';
+    },
+    /** Сага закончила озвучку при ошибке; сброс слотов и пула для повтора. */
+    wrongDone(
+      state,
+      action: PayloadAction<{ targetLength: number; letters: string[] }>
+    ) {
+      const { targetLength, letters } = action.payload;
+      state.slots = Array(targetLength).fill(null);
+      state.pool = [...letters].sort(() => Math.random() - 0.5);
+      state.status = 'idle';
+    },
   },
 });
 
@@ -71,4 +88,7 @@ export const {
   setSlots,
   setPool,
   setStatus,
+  chooseCorrect,
+  chooseWrong,
+  wrongDone,
 } = composeSyllableSlice.actions;

@@ -8,10 +8,7 @@ import {
 import { PickSyllableRoundContainer } from '@/tasks/pick-syllable';
 import { ComposeSyllableRoundContainer } from '@/tasks/compose-syllable';
 import { DifficultyPicker } from '@/components/DifficultyPicker';
-import { createBrowserTTS } from '@/domain/tts';
 import './App.css';
-
-const TTS = createBrowserTTS();
 
 export default function App() {
   const dispatch = useAppDispatch();
@@ -88,7 +85,7 @@ export default function App() {
           <PickSyllableRoundContainer key={roundKey} />
         )}
         {currentRound.type === 'composeSyllable' && (
-          <ComposeSyllableRoundContainer key={roundKey} tts={TTS} />
+          <ComposeSyllableRoundContainer key={roundKey} />
         )}
       </main>
     </div>

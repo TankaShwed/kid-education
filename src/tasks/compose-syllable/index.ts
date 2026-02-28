@@ -1,4 +1,4 @@
-export { ComposeSyllableRound } from './ComposeSyllableRound';
 export { ComposeSyllableRoundContainer } from './ComposeSyllableRoundContainer';
+export { ComposeSyllableRoundView } from './ComposeSyllableRoundView';
 export { composeSyllableSlice } from './composeSyllableSlice';
-export type { ComposeSyllableRoundProps } from './ComposeSyllableRound';
+export type { ComposeSyllableRoundViewProps } from './ComposeSyllableRoundView';

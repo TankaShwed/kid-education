@@ -1,30 +1,30 @@
 import type { Meta, StoryObj } from '@storybook/react';
 import { Provider } from 'react-redux';
-import { PickSyllableRoundContainer } from './PickSyllableRoundContainer';
-import { createStoreForStory, sessionSlice, pickSyllableSlice } from '@/store';
+import { ComposeSyllableRoundContainer } from './ComposeSyllableRoundContainer';
+import { createStoreForStory, sessionSlice, composeSyllableSlice } from '@/store';
 import type { TTSProvider } from '@/domain/tts';
 
 /** Мок TTS для изоляции в Storybook (озвучка не воспроизводится). */
 const mockTTS: TTSProvider = {
-  speak: (...args) => { console.log('Speak:', ...args); return Promise.resolve() },
-  cancel: () => { },
+  speak: (arg: string) => {console.log('speak:', arg); return Promise.resolve()},
+  cancel: () => {},
 };
 
 function makeStoreWithRound(round: {
-  type: 'pickSyllable';
+  type: 'composeSyllable';
   target: string;
-  options: string[];
+  letters: string[];
 }) {
   const storyStore = createStoreForStory(mockTTS);
   storyStore.dispatch(sessionSlice.actions.setRound(round));
-  storyStore.dispatch(pickSyllableSlice.actions.reset(round));
+  storyStore.dispatch(composeSyllableSlice.actions.reset(round));
   return storyStore;
 }
 
 const defaultRound = {
-  type: 'pickSyllable' as const,
-  target: 'НА',
-  options: ['НО', 'НА', 'КА', 'КУ', 'НУ'],
+  type: 'composeSyllable' as const,
+  target: 'НО',
+  letters: ['О', 'Н'],
 };
 
 const withStore = (round: typeof defaultRound = defaultRound) => {
@@ -40,25 +40,25 @@ const withStore = (round: typeof defaultRound = defaultRound) => {
   return ReduxDecorator;
 };
 
-const meta: Meta<typeof PickSyllableRoundContainer> = {
-  component: PickSyllableRoundContainer,
-  title: 'tasks/PickSyllableRoundContainer',
+const meta: Meta<typeof ComposeSyllableRoundContainer> = {
+  component: ComposeSyllableRoundContainer,
+  title: 'tasks/ComposeSyllable/Container',
   decorators: [withStore()],
 };
 export default meta;
 
-type Story = StoryObj<typeof PickSyllableRoundContainer>;
+type Story = StoryObj<typeof ComposeSyllableRoundContainer>;
 
-/** Контейнер в изоляции: раунд «Выбери слог НА», кнопка «Начать» → сага озвучивает (мок) → выбор слога. */
+/** Контейнер в изоляции: раунд «Собери слог НО», кнопка «Начать» → сага озвучивает (мок) → DnD. */
 export const Default: Story = {};
 
-/** Меньше вариантов (3). */
-export const ThreeOptions: Story = {
+/** Раунд «МА». */
+export const Ma: Story = {
   decorators: [
     withStore({
-      type: 'pickSyllable',
+      type: 'composeSyllable',
       target: 'МА',
-      options: ['МА', 'МО', 'МУ'],
+      letters: ['М', 'А'],
     }),
   ],
 };

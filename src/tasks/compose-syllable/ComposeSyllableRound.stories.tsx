@@ -1,31 +1,63 @@
 import type { Meta, StoryObj } from '@storybook/react';
-import { ComposeSyllableRound } from './ComposeSyllableRound';
-import { createBrowserTTS } from '@/domain/tts';
+import { ComposeSyllableRoundView } from './ComposeSyllableRoundView';
 
-const tts = createBrowserTTS();
+const defaultRound = {
+  type: 'composeSyllable' as const,
+  target: 'НО',
+  letters: ['О', 'Н'],
+};
 
-const meta: Meta<typeof ComposeSyllableRound> = {
-  component: ComposeSyllableRound,
-  title: 'tasks/ComposeSyllableRound',
+const meta: Meta<typeof ComposeSyllableRoundView> = {
+  component: ComposeSyllableRoundView,
+  title: 'tasks/ComposeSyllable/View',
   args: {
-    tts,
-    onCorrect: () => {},
+    round: defaultRound,
+    onStart: () => {},
+    onDropToSlot: () => {},
+    onDropToPool: () => {},
   },
 };
 export default meta;
 
-type Story = StoryObj<typeof ComposeSyllableRound>;
+type Story = StoryObj<typeof ComposeSyllableRoundView>;
 
+/** Кнопка «Начать», раунд ещё не начат. */
 export const Default: Story = {
   args: {
-    round: {
-      type: 'composeSyllable',
-      target: 'НО',
-      letters: ['О', 'Н'],
-    },
+    round: defaultRound,
+    slots: [null, null],
+    pool: ['О', 'Н'],
+    status: 'idle',
+    hasStarted: false,
+    spoken: false,
   },
 };
 
+/** Раунд начат, слоты пустые, можно перетаскивать. */
+export const Started: Story = {
+  args: {
+    round: defaultRound,
+    slots: [null, null],
+    pool: ['О', 'Н'],
+    status: 'idle',
+    hasStarted: true,
+    spoken: true,
+  },
+};
+
+/** Частично собранный слог. */
+export const Partial: Story = {
+  args: {
+    round: defaultRound,
+    slots: ['Н', null],
+    pool: ['О'],
+    status: 'idle',
+    hasStarted: true,
+    spoken: true,
+  },
+};
+
+/** Раунд «МА» с тремя буквами. */
 export const Ma: Story = {
   args: {
     round: {
@@ -33,5 +65,10 @@ export const Ma: Story = {
       target: 'МА',
       letters: ['М', 'А'],
     },
+    slots: [null, null],
+    pool: ['М', 'А'],
+    status: 'idle',
+    hasStarted: true,
+    spoken: true,
   },
 };

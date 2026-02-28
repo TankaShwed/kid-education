@@ -20,26 +20,28 @@
 
 ## Состояние и события
 
-В store под ключом `composeSyllable` хранятся слоты, пул букв, статус и флаги озвучки. Сейчас часть логики (слоты, пул, проверка) реализована внутри компонента ComposeSyllableRound; slice и сага зарезервированы под будущий перенос (по аналогии с «Выбери слог»). Сага обрабатывает только startRound → озвучка инструкции.
+В store под ключом `composeSyllable` хранятся слоты, пул букв, статус и флаги озвучки. Контейнер читает состояние из store и диспатчит экшены (startRound, setSlots, setPool, chooseCorrect, chooseWrong); сага обрабатывает озвучку и сброс при ошибке (wrongDone).
 
 **Подробно:** экшены и поля состояния — в `composeSyllableSlice.ts` (TSDoc).
 
 ## Сага
 
-Озвучивает «Собери слог» и целевой слог по экшену startRound, диспатчит instructionDone. Переход к следующему раунду при правильном ответе пока вызывается из UI (onCorrect → nextRound).
+- **startRound** — озвучивает «Собери слог» и целевой слог, диспатчит instructionDone.
+- **chooseCorrect** — озвучивает «Правильно! Молодец!», вызывает dispatchNextRound().
+- **chooseWrong** — озвучивает фидбек по собранному слогу, диспатчит wrongDone (сброс слотов и пула).
 
 **Детали:** `composeSyllableSaga.ts` (TSDoc).
 
 ## UI
 
-- **ComposeSyllableRound** — компонент раунда с локальным состоянием слотов/пула и drag-and-drop. Принимает round, tts и onCorrect. Пропсы описаны в TSDoc в файле.
-- **ComposeSyllableRoundContainer** — берёт раунд из store (session.currentRound), передаёт в компонент TTS (из App) и onCorrect (nextRound).
+- **ComposeSyllableRoundView** — презентационный компонент: слоты, пул, DnD, кнопка «Начать». Принимает данные и колбэки из контейнера (без TTS и store).
+- **ComposeSyllableRoundContainer** — подключает View к store (session.currentRound, composeSyllable), диспатчит экшены по действиям пользователя.
 
-См. `ComposeSyllableRound.tsx`, `ComposeSyllableRoundContainer.tsx`.
+См. `ComposeSyllableRoundView.tsx`, `ComposeSyllableRoundContainer.tsx`.
 
-## Подключение в приложение
+## Подключение в приложении
 
 - Типы и фабрика раунда: `src/domain/types.ts`, `src/domain/rounds.ts`.
 - Store: reducer `composeSyllable`, в `createRound()` и `nextRound()` ветка для `composeSyllable` — `src/store/store.ts`.
 - Сага: `fork(composeSyllableSaga, context)` в `src/store/sagas/rootSaga.ts`.
-- App: переключение задания и ветка `currentRound.type === 'composeSyllable'` с рендером `<ComposeSyllableRoundContainer key={roundKey} tts={TTS} />` — `src/App.tsx`.
+- App: переключение задания и ветка `currentRound.type === 'composeSyllable'` с рендером `<ComposeSyllableRoundContainer key={roundKey} />` — `src/App.tsx`.
