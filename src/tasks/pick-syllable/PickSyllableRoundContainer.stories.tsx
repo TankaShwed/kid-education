@@ -42,7 +42,7 @@ const withStore = (round: typeof defaultRound = defaultRound) => {
 
 const meta: Meta<typeof PickSyllableRoundContainer> = {
   component: PickSyllableRoundContainer,
-  title: 'tasks/PickSyllableRoundContainer',
+  title: 'tasks/PickSyllable/Container',
   decorators: [withStore()],
 };
 export default meta;
