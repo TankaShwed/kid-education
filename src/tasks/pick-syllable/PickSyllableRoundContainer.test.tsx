@@ -1,5 +1,17 @@
+/**
+ * Сага обновляет store асинхронно (после resolve TTS.speak). Чтобы не получать
+ * предупреждения act(), ждём "успокоения" страницы внутри act(): после клика
+ * вызываем второй act(async () => await findBy... / waitFor(...)), который
+ * завершится только когда нужный элемент появится (сага успеет отработать).
+ */
 import { describe, it, expect, beforeEach, vi } from 'vitest';
-import { render, screen, waitFor, fireEvent, act } from '@testing-library/react';
+import {
+  render,
+  screen,
+  waitFor,
+  fireEvent,
+  act,
+} from '@testing-library/react';
 import { Provider } from 'react-redux';
 import { PickSyllableRoundContainer } from './PickSyllableRoundContainer';
 import {
@@ -50,70 +62,99 @@ describe('PickSyllable task', () => {
   })
 
   describe('click start button', () => {
-    beforeEach(() => {
-      act(()=>{
-        const startBtn = screen.getByTestId('pick-syllable-start');
-        expect(startBtn).toBeVisible();
+    beforeEach(async () => {
+      const startBtn = screen.getByTestId('pick-syllable-start');
+      expect(startBtn).toBeVisible();
+      act(() => {
         fireEvent.click(startBtn);
-  
       });
-      describe('should render options', () => {
-        it('should render options', () => {
-          const options = screen.getByTestId('pick-syllable-options');
-          expect(options).toBeInTheDocument();
-        });
-        it('should speak instruction', () => {
-          // TODO: check call to mock TTS
-        });
-        
+      await act(async () => {
+        await screen.findByTestId('pick-syllable-options');
       });
-      defaultRound.options.forEach(option => {
-        if (option == defaultRound.target){
+    });
+
+    describe('should render options', () => {
+      it('should render options', () => {
+        const options = screen.getByTestId('pick-syllable-options');
+        expect(options).toBeInTheDocument();
+      });
+      it('should speak instruction', () => {
+        expect(mockTTS.speak).toHaveBeenCalledWith('Выбери слог');
+        expect(mockTTS.speak).toHaveBeenCalledWith(
+          'на',
+          expect.any(Object)
+        );
+      });
+    });
+
+    defaultRound.options.forEach((option) => {
+      if (option === defaultRound.target) {
+        describe('click correct button', () => {
+          beforeEach(async () => {
+            const dataTestId = `pick-syllable-option-${option}`;
+            act(() => {
+              fireEvent.click(screen.getByTestId(dataTestId));
+            });
+            await act(async () => {
+              await waitFor(() => {
+                expect(mockTTS.speak).toHaveBeenCalledWith('Правильно');
+              });
+            });
+          });
+          it('should speak correct feedback', () => {
+            expect(mockTTS.speak).toHaveBeenCalledWith('Правильно');
+          });
+          it('should speak instruction for next round', () => {
+            expect(
+              screen.getByTestId('pick-syllable-start')
+            ).toBeVisible();
+          });
+        });
+      } else {
+        describe('click wrong button', () => {
+          beforeEach(async () => {
+            const dataTestId = `pick-syllable-option-${option}`;
+            act(() => {
+              fireEvent.click(screen.getByTestId(dataTestId));
+            });
+            await act(async () => {
+              await waitFor(() => {
+                expect(
+                  screen.queryByTestId(`pick-syllable-option-${option}`)
+                ).not.toBeInTheDocument();
+              });
+            });
+          });
+          it('should speak wrong feedback', () => {
+            expect(mockTTS.speak).toHaveBeenCalledWith('Это слог ');
+            expect(mockTTS.speak).toHaveBeenCalledWith(
+              option.toLowerCase(),
+              expect.any(Object)
+            );
+          });
+          it('should hide wrong selected option: ' + option, () => {
+            expect(
+              screen.queryByTestId(`pick-syllable-option-${option}`)
+            ).not.toBeInTheDocument();
+          });
           describe('click correct button', () => {
-            beforeEach(() => {
-              const dataTestId = `pick-syllable-option-${option}`;
-              act(()=>{
-                const correctBtn = screen.getByTestId(dataTestId);
-                fireEvent.click(correctBtn);
+            beforeEach(async () => {
+              const dataTestId = `pick-syllable-option-${defaultRound.target}`;
+              act(() => {
+                fireEvent.click(screen.getByTestId(dataTestId));
+              });
+              await act(async () => {
+                await waitFor(() => {
+                  expect(mockTTS.speak).toHaveBeenCalledWith('Правильно');
+                });
               });
             });
             it('should speak correct feedback', () => {
-              // TODO: check call to mock TTS
-            });
-            it('should speak instruction for next round', () => {
-              // TODO: check call to mock TTS
+              expect(mockTTS.speak).toHaveBeenCalledWith('Правильно');
             });
           });
-        } else {
-          describe('click wrong button', () => {
-            beforeEach(() => {
-              const dataTestId = `pick-syllable-option-${option}`;
-              act(()=>{
-                const wrongBtn = screen.getByTestId(dataTestId);
-                fireEvent.click(wrongBtn);
-              });
-            });
-            it('should speak wrong feedback', () => {
-              // TODO: check call to mock TTS
-            });
-            it('should hide wrong selected option: '+option, () => {
-              // TODO: check call to mock TTS
-            });
-            describe('click correct button', () => {
-              beforeEach(() => {
-                const dataTestId = `pick-syllable-option-${defaultRound.target}`;
-                act(()=>{
-                  const correctBtn = screen.getByTestId(dataTestId);
-                  fireEvent.click(correctBtn);
-                });
-              });
-              it('should speak correct feedback', () => {
-                // TODO: check call to mock TTS
-              });
-            });
-          });
-        }
-      });
+        });
+      }
     });
   });
 });
