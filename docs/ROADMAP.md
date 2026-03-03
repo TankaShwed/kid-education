@@ -18,6 +18,7 @@
 ### Инструкция для разработки заданий
 
 - **Инструкция для LLM-агента** — как писать новые задания: структура (slice, saga, view, container), контракты, тесты, подключение к стратегии.
+- **Инструкция по тестам заданий** — в [docs/testing-tasks.md](docs/testing-tasks.md): вложенность describe, один it = одна проверка, действия в beforeEach, ожидание в act(), моки, чек-лист; эталон — PickSyllableRoundContainer.test.tsx. Правило для Cursor: [.cursor/rules/task-tests.mdc](../.cursor/rules/task-tests.mdc).
 
 ### Стратегии заданий
 

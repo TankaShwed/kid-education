@@ -1,0 +1,26 @@
+---
+description: How to write task container tests (*RoundContainer.test.tsx)
+globs: "**/tasks/**/*RoundContainer.test.tsx"
+alwaysApply: false
+---
+
+# Task container tests
+
+Reference: `src/tasks/pick-syllable/PickSyllableRoundContainer.test.tsx`; second example: `src/tasks/compose-syllable/ComposeSyllableRoundContainer.test.tsx`.
+
+## Structure
+
+- **Root describe** — task name. In `beforeEach`: TTS mock (`speak: vi.fn().mockResolvedValue(undefined)`, `cancel: vi.fn()`), store via `createStoreForStory(mockTTS)` + `setRound(round)` + task slice reset, `render(Provider + Container)`. For tasks with nextRound, use `setTaskType('...')` when needed so the next round stays the same type.
+- **Nested describe** blocks — by scenario steps: `success render` → `click start button` → branches (correct/wrong, fill slots, etc.). Each step’s `beforeEach` performs **user actions** and **waits for UI/saga to settle** inside `act()`.
+
+## Rules
+
+1. **One `it` — one logical assertion.** Don’t combine UI checks, TTS checks, and the next step in a single test. Use names like `should render start button`, `should speak instruction`, `should speak correct feedback`.
+2. **Actions in `beforeEach`.** Clicks, option selection, DnD simulation via store — all in the `beforeEach` of the describe that represents that step.
+3. **After async action — wait inside act():**
+   - `act(() => { fireEvent.click(btn); });`
+   - `await act(async () => { await screen.findByTestId('...'); });` or `await act(async () => { await waitFor(() => { expect(mockTTS.speak).toHaveBeenCalledWith(...); }); });`
+4. **Selectors:** only `data-testid`, `getByRole`, visible text. No class names.
+5. **DnD in jsdom:** do not emulate drag events; simulate the outcome with store actions (`setSlots`, `setPool`, `chooseCorrect`/`chooseWrong`) inside `act()` in the relevant `beforeEach`.
+
+Scenarios and data-testid values are defined in `SCENARIOS.md` in the task folder.
