@@ -22,8 +22,18 @@ export interface ComposeSyllableTaskConfig {
   /** Пока без параметров сложности; позже — лишние буквы-дистракторы */
 }
 
+import type {
+  ClassifyLetterTaskConfig,
+  ClassifyLetterRound,
+} from '@/tasks/classify-letter/types';
+
+export type { ClassifyLetterTaskConfig, ClassifyLetterRound };
+
 /** Общий тип конфигурации задания (расширяется другими типами) */
-export type TaskConfig = PickSyllableTaskConfig | ComposeSyllableTaskConfig;
+export type TaskConfig =
+  | PickSyllableTaskConfig
+  | ComposeSyllableTaskConfig
+  | ClassifyLetterTaskConfig;
 
 /** Идентификатор типа задания для микса в будущем */
 export type TaskType = TaskConfig['type'];
@@ -46,7 +56,10 @@ export interface ComposeSyllableRound {
   letters: string[];
 }
 
-export type Round = PickSyllableRound | ComposeSyllableRound;
+export type Round =
+  | PickSyllableRound
+  | ComposeSyllableRound
+  | ClassifyLetterRound;
 
 /** Результат попытки в раунде */
 export type AttemptResult =

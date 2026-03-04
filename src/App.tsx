@@ -7,6 +7,7 @@ import {
 } from '@/store';
 import { PickSyllableRoundContainer } from '@/tasks/pick-syllable';
 import { ComposeSyllableRoundContainer } from '@/tasks/compose-syllable';
+import { ClassifyLetterRoundContainer } from '@/tasks/classify-letter';
 import { DifficultyPicker } from '@/components/DifficultyPicker';
 import './App.css';
 
@@ -59,6 +60,14 @@ export default function App() {
           >
             Собери слог
           </button>
+          <button
+            type="button"
+            className={taskType === 'classifyLetter' ? 'active' : ''}
+            onClick={() => switchTask('classifyLetter')}
+            data-testid="task-classify-letter"
+          >
+            Гласная или согласная
+          </button>
         </nav>
         {taskType === 'pickSyllable' && (
           <>
@@ -86,6 +95,9 @@ export default function App() {
         )}
         {currentRound.type === 'composeSyllable' && (
           <ComposeSyllableRoundContainer key={roundKey} />
+        )}
+        {currentRound.type === 'classifyLetter' && (
+          <ClassifyLetterRoundContainer key={roundKey} />
         )}
       </main>
     </div>

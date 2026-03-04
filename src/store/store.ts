@@ -9,15 +9,20 @@ import {
   createPickSyllableRound,
   createComposeSyllableRound,
 } from '@/domain/rounds';
+import { createClassifyLetterRound } from '@/tasks/classify-letter/rounds';
 import { sessionSlice } from './sessionSlice';
 import { pickSyllableSlice } from '@/tasks/pick-syllable/pickSyllableSlice';
 import { composeSyllableSlice } from '@/tasks/compose-syllable/composeSyllableSlice';
+import { classifyLetterSlice } from '@/tasks/classify-letter/classifyLetterSlice';
 import { rootSaga } from './sagas/rootSaga';
 import type { TTSProvider } from '@/domain/tts';
 
 function createRound(taskType: TaskType, difficulty: DifficultyLevel): Round {
   if (taskType === 'pickSyllable') {
     return createPickSyllableRound(difficulty);
+  }
+  if (taskType === 'classifyLetter') {
+    return createClassifyLetterRound();
   }
   return createComposeSyllableRound();
 }
@@ -29,6 +34,7 @@ export const store = configureStore({
     session: sessionSlice.reducer,
     pickSyllable: pickSyllableSlice.reducer,
     composeSyllable: composeSyllableSlice.reducer,
+    classifyLetter: classifyLetterSlice.reducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({ thunk: true }).concat(sagaMiddleware),
@@ -42,6 +48,7 @@ export function createStoreForStory(tts: TTSProvider) {
       session: sessionSlice.reducer,
       pickSyllable: pickSyllableSlice.reducer,
       composeSyllable: composeSyllableSlice.reducer,
+      classifyLetter: classifyLetterSlice.reducer,
     },
     middleware: (getDefaultMiddleware) =>
       getDefaultMiddleware({ thunk: true }).concat(storySagaMiddleware),
@@ -65,6 +72,8 @@ export const nextRound = (): AppThunk => (dispatch, getState) => {
   dispatch(sessionSlice.actions.setRound(round));
   if (round.type === 'pickSyllable') {
     dispatch(pickSyllableSlice.actions.reset(round));
+  } else if (round.type === 'classifyLetter') {
+    dispatch(classifyLetterSlice.actions.reset(round));
   } else {
     dispatch(composeSyllableSlice.actions.reset(round));
   }
