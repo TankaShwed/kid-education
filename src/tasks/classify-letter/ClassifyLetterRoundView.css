@@ -1,0 +1,139 @@
+/* Стили задания «Гласная или согласная» (vowel/consonant DnD) */
+
+.classify-letter-round {
+  text-align: center;
+}
+
+.classify-letter-round .start-button {
+  padding: 1rem 2rem;
+  font-size: 1.25rem;
+  font-weight: 600;
+  border: 2px solid #333;
+  border-radius: 12px;
+  background: #e8f4fc;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.classify-letter-round .start-button:hover {
+  background: #cce8f9;
+}
+
+.classify-letter-zones {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+  margin-bottom: 1.5rem;
+  min-height: 8rem;
+}
+
+.classify-letter-zone {
+  flex: 1;
+  max-width: 14rem;
+  border-radius: 12px;
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  transition: background 0.15s;
+}
+
+.classify-letter-zone.zone-vowel {
+  background: rgba(200, 50, 50, 0.25);
+  border: 2px dashed rgba(180, 40, 40, 0.5);
+}
+
+.classify-letter-zone.zone-consonant {
+  background: rgba(0, 80, 180, 0.25);
+  border: 2px dashed rgba(0, 60, 140, 0.5);
+}
+
+.classify-letter-zone .zone-label {
+  font-size: 0.9rem;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+  opacity: 0.9;
+}
+
+.zone-vowel .zone-label {
+  color: #8b2020;
+}
+
+.zone-consonant .zone-label {
+  color: #0a4a8a;
+}
+
+.classify-letter-zone .zone-letters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  justify-content: center;
+  align-items: center;
+  min-height: 3rem;
+}
+
+.classify-letter-pool {
+  position: relative;
+  min-height: 12rem;
+  margin-bottom: 1rem;
+}
+
+.classify-letter-pool .letter-chip {
+  position: absolute;
+  transform: translate(-50%, -50%);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 2.75rem;
+  height: 2.75rem;
+  padding: 0 0.5rem;
+  font-size: 1.5rem;
+  font-weight: 700;
+  border: 2px solid #333;
+  border-radius: 10px;
+  background: #fff;
+  cursor: grab;
+  user-select: none;
+  transition: box-shadow 0.15s, transform 0.15s;
+}
+
+.classify-letter-pool .letter-chip:hover {
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+
+.classify-letter-pool .letter-chip:active {
+  cursor: grabbing;
+}
+
+.classify-letter-pool .letter-chip.dragging {
+  opacity: 0.4;
+}
+
+.classify-letter-pool .letter-chip.correct,
+.classify-letter-zone .letter-chip.correct {
+  box-shadow: 0 0 0 2px rgba(0, 120, 0, 0.6);
+  cursor: default;
+}
+
+.classify-letter-pool .letter-chip.wrong {
+  animation: classify-letter-wrong 0.5s ease-in-out;
+}
+
+@keyframes classify-letter-wrong {
+  0%,
+  100% {
+    transform: translate(-50%, -50%) scale(1) rotate(0deg);
+  }
+  25% {
+    transform: translate(-50%, -50%) translateX(-4px) scale(1.05) rotate(-3deg);
+  }
+  75% {
+    transform: translate(-50%, -50%) translateX(4px) scale(1.05) rotate(3deg);
+  }
+}
+
+.classify-letter-round .hint {
+  margin-top: 0.5rem;
+  color: #666;
+  font-size: 0.95rem;
+}

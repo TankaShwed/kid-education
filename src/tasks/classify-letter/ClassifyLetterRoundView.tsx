@@ -1,6 +1,7 @@
 import { useState, useCallback } from 'react';
 import type { ClassifyLetterRound } from './types';
 import type { ClassifyLetterItem } from './classifyLetterSlice';
+import './ClassifyLetterRoundView.css';
 
 /**
  * Пропсы презентационного компонента «Гласная или согласная».
