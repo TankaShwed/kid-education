@@ -26,14 +26,20 @@ import type {
   ClassifyLetterTaskConfig,
   ClassifyLetterRound,
 } from '@/tasks/classify-letter/types';
+import type {
+  PairSyllableTaskConfig,
+  PairSyllableRound,
+} from '@/tasks/pair-syllable/types';
 
 export type { ClassifyLetterTaskConfig, ClassifyLetterRound };
+export type { PairSyllableTaskConfig, PairSyllableRound };
 
 /** Общий тип конфигурации задания (расширяется другими типами) */
 export type TaskConfig =
   | PickSyllableTaskConfig
   | ComposeSyllableTaskConfig
-  | ClassifyLetterTaskConfig;
+  | ClassifyLetterTaskConfig
+  | PairSyllableTaskConfig;
 
 /** Идентификатор типа задания для микса в будущем */
 export type TaskType = TaskConfig['type'];
@@ -59,7 +65,8 @@ export interface ComposeSyllableRound {
 export type Round =
   | PickSyllableRound
   | ComposeSyllableRound
-  | ClassifyLetterRound;
+  | ClassifyLetterRound
+  | PairSyllableRound;
 
 /** Результат попытки в раунде */
 export type AttemptResult =

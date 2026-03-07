@@ -1,0 +1,1 @@
+const t=["А","О","У","Ы","И","Е","Я","Ю","Ё"],n=["Н","К","М","П","С","Т","Р","Л","В","Б","Д","Г","З","Ж","Ш","Ч","Ф","Х"],e=new Set(t);function o(s){return e.has(s.toUpperCase())}export{n as C,t as V,o as i};

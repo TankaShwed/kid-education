@@ -8,6 +8,7 @@ import {
 import { PickSyllableRoundContainer } from '@/tasks/pick-syllable';
 import { ComposeSyllableRoundContainer } from '@/tasks/compose-syllable';
 import { ClassifyLetterRoundContainer } from '@/tasks/classify-letter';
+import { PairSyllableRoundContainer } from '@/tasks/pair-syllable';
 import { DifficultyPicker } from '@/components/DifficultyPicker';
 import './App.css';
 
@@ -68,6 +69,14 @@ export default function App() {
           >
             Гласная или согласная
           </button>
+          <button
+            type="button"
+            className={taskType === 'pairSyllable' ? 'active' : ''}
+            onClick={() => switchTask('pairSyllable')}
+            data-testid="task-pair-syllable"
+          >
+            Сложи слог
+          </button>
         </nav>
         {taskType === 'pickSyllable' && (
           <>
@@ -98,6 +107,9 @@ export default function App() {
         )}
         {currentRound.type === 'classifyLetter' && (
           <ClassifyLetterRoundContainer key={roundKey} />
+        )}
+        {currentRound.type === 'pairSyllable' && (
+          <PairSyllableRoundContainer key={roundKey} />
         )}
       </main>
     </div>
