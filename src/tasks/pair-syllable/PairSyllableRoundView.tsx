@@ -1,4 +1,4 @@
-import { useState, useCallback, useRef } from 'react';
+import { useState, useCallback, useRef, useLayoutEffect } from 'react';
 import type { PairSyllableRound } from './types';
 import type {
   PairSyllableLetter,
@@ -62,7 +62,19 @@ export function PairSyllableRoundView({
 }: PairSyllableRoundViewProps) {
   const [draggingId, setDraggingId] = useState<string | null>(null);
   const lettersContainerRef = useRef<HTMLDivElement>(null);
+  const [containerSize, setContainerSize] = useState({ w: 0, h: 0 });
   const [customPosition, setCustomPosition] = useState<{ xs: number; ys: number, xe: number, ye: number } | null>(null);
+
+  useLayoutEffect(() => {
+    const el = lettersContainerRef.current;
+    if (!el) return;
+    const update = () =>
+      setContainerSize({ w: el.clientWidth, h: el.clientHeight });
+    update();
+    const ro = new ResizeObserver(update);
+    ro.observe(el);
+    return () => ro.disconnect();
+  }, [phase, letters.length]);
 
   const getDropCoords = useCallback((e: React.DragEvent) => {
     const container = lettersContainerRef.current;
@@ -105,7 +117,7 @@ export function PairSyllableRoundView({
   }, [customPosition]);
 
   const handleDropOnLetter = useCallback(
-    (e: React.DragEvent, targetId: string) => {
+    (e: React.DragEvent) => {
       e.preventDefault();
       e.stopPropagation();
       setDraggingId(null);
@@ -136,8 +148,7 @@ export function PairSyllableRoundView({
           letterId: string;
           letter: string;
         };
-        const { dropX, dropY } = getDropCoords(e);
-        onDrop({ draggedId: letterId, targetId: null, dropX, dropY });
+        onDrop({ draggedId: letterId, ...getDropCoords(e) });
       } catch {
         // ignore
       }
@@ -183,14 +194,14 @@ export function PairSyllableRoundView({
                 key={letter.id}
                 className={`letter-chip ${isVowel(letter.letter) ? 'vowel' : 'consonant'} ${draggingId === letter.id ? 'dragging' : ''}`}
                 style={{
-                  left: `${flyPosition(letter, draggingId, customPosition, lettersContainerRef.current?.clientWidth ?? 0, lettersContainerRef.current?.clientHeight ?? 0).x}%`,
-                  top: `${flyPosition(letter, draggingId, customPosition, lettersContainerRef.current?.clientWidth ?? 0, lettersContainerRef.current?.clientHeight ?? 0).y}%`,
+                  left: `${flyPosition(letter, draggingId, customPosition, containerSize.w, containerSize.h).x}%`,
+                  top: `${flyPosition(letter, draggingId, customPosition, containerSize.w, containerSize.h).y}%`,
                 }}
                 draggable
                 onDragStart={(e) => handleDragStart(e, letter)}
                 onDragEnd={handleDragEnd}
                 onDragOver={preventDefault}
-                onDrop={(e) => handleDropOnLetter(e, letter.id)}
+                onDrop={handleDropOnLetter}
                 data-testid={`pair-syllable-letter-${letter.id}`}
               >
                 {letter.letter}

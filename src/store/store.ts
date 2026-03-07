@@ -15,7 +15,7 @@ import { sessionSlice } from './sessionSlice';
 import { pickSyllableSlice } from '@/tasks/pick-syllable/pickSyllableSlice';
 import { composeSyllableSlice } from '@/tasks/compose-syllable/composeSyllableSlice';
 import { classifyLetterSlice } from '@/tasks/classify-letter/classifyLetterSlice';
-import { pairSyllableSlice } from '@/tasks/pair-syllable/pairSyllableSlice';
+import { pairSyllableSlice } from '@/tasks/pair-syllable';
 import { rootSaga } from './sagas/rootSaga';
 import type { TTSProvider } from '@/domain/tts';
 

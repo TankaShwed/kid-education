@@ -7,8 +7,6 @@ import { pairSyllableSlice } from './pairSyllableSlice';
 
 const INSTRUCTION = 'Сложи гласную и согласную в слог.';
 const FIND_PHRASE = 'Найди слог';
-/** Минимальное смещение по X между согласной и гласной (в %), ~полширины буквы */
-const HALF_LETTER_WIDTH_PERCENT = 10;
 
 function* playInstruction(_action: unknown, context: SagaContext) {
   const { tts } = context;
@@ -22,17 +20,21 @@ function* playInstruction(_action: unknown, context: SagaContext) {
 
 function* onDropOccurred(
   action: ReturnType<typeof pairSyllableSlice.actions.placeLetter>,
-  context: SagaContext
+  _context: SagaContext
 ) {
   const { payload } = action;
   const { draggedId, dropX, dropY, width_percent, height_percent } = payload;
-  const [nearestdistance, nearestId] = yield select((state: RootState) => {
-    return state.pairSyllable.letters.filter((l) => l.id !== draggedId).map((el) => {
-      return [Math.hypot(el.position.x - dropX, el.position.y - dropY), el.id];
-    }).sort((a, b) => a[0] - b[0])[0];
-  });
-
-  // debugger;
+  const nearestEntry = (yield select((state: RootState) => {
+    return state.pairSyllable.letters
+      .filter((l) => l.id !== draggedId)
+      .map((el) => [
+        Math.hypot(el.position.x - dropX, el.position.y - dropY),
+        el.id,
+      ] as [number, string])
+      .sort((a, b) => a[0] - b[0])[0];
+  })) as [number, string] | undefined;
+  if (!nearestEntry) return;
+  const [nearestdistance, nearestId] = nearestEntry;
   if (nearestdistance > Math.hypot(width_percent, height_percent)) return;
 
   const state: RootState = yield select();
@@ -58,7 +60,6 @@ function* onDropOccurred(
   const consonantLeft = !isVowel(leftLetter.letter);
   const vowelRight = isVowel(rightLetter.letter);
   const syllable = leftLetter.letter + rightLetter.letter;
-  console.log(leftLetter.letter, rightLetter.letter, consonantLeft, vowelRight);
 
   if (!consonantLeft || !vowelRight) {
     yield put(
@@ -78,7 +79,7 @@ function* onPairFormed(
   action: ReturnType<typeof pairSyllableSlice.actions.pairFormed>,
   context: SagaContext
 ) {
-  const { tts, store } = context;
+  const { tts } = context;
   const { syllable } = action.payload;
   try {
     yield call([tts, tts.speak], syllable.toLowerCase(), {

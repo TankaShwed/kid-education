@@ -12,6 +12,7 @@ export default tseslint.config(
       'node_modules/',
       'build/',
       'coverage/',
+      'storybook-static/',
       '**/*.config.js',
     ],
   },
@@ -40,6 +41,10 @@ export default tseslint.config(
       'react/react-in-jsx-scope': 'off',
       'react-hooks/set-state-in-effect': 'warn',
       semi: ['error', 'always'],
+      '@typescript-eslint/no-unused-vars': [
+        'error',
+        { argsIgnorePattern: '^_', varsIgnorePattern: '^_' },
+      ],
     },
   },
   prettierConfig

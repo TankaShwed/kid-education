@@ -84,11 +84,12 @@ describe('PairSyllable task', () => {
         expect(letterM && letterA).toBeDefined();
         act(() => {
           store.dispatch(
-            pairSyllableSlice.actions.dropOccurred({
+            pairSyllableSlice.actions.placeLetter({
               draggedId: letterA!.id,
-              targetId: letterM!.id,
               dropX: letterM!.position.x + 10,
               dropY: letterM!.position.y,
+              width_percent: 10,
+              height_percent: 10,
             })
           );
         });
@@ -116,11 +117,12 @@ describe('PairSyllable task', () => {
         letterId = letter.id;
         act(() => {
           store.dispatch(
-            pairSyllableSlice.actions.dropOccurred({
+            pairSyllableSlice.actions.placeLetter({
               draggedId: letter.id,
-              targetId: null,
               dropX: 50,
               dropY: 40,
+              width_percent: 10,
+              height_percent: 10,
             })
           );
         });
@@ -140,15 +142,14 @@ describe('PairSyllable task', () => {
         let letters = state.pairSyllable.letters;
         const letterM = letters.find((l) => l.letter === 'М')!;
         const letterA = letters.find((l) => l.letter === 'А')!;
-        const letterN = letters.find((l) => l.letter === 'Н')!;
-        const letterO = letters.find((l) => l.letter === 'О')!;
         act(() => {
           store.dispatch(
-            pairSyllableSlice.actions.dropOccurred({
+            pairSyllableSlice.actions.placeLetter({
               draggedId: letterA.id,
-              targetId: letterM.id,
               dropX: letterM.position.x + 10,
               dropY: letterM.position.y,
+              width_percent: 10,
+              height_percent: 10,
             })
           );
         });
@@ -163,11 +164,12 @@ describe('PairSyllable task', () => {
         const letterO2 = letters.find((l) => l.letter === 'О')!;
         act(() => {
           store.dispatch(
-            pairSyllableSlice.actions.dropOccurred({
+            pairSyllableSlice.actions.placeLetter({
               draggedId: letterO2.id,
-              targetId: letterN2.id,
               dropX: letterN2.position.x + 10,
               dropY: letterN2.position.y,
+              width_percent: 10,
+              height_percent: 10,
             })
           );
         });
@@ -218,11 +220,12 @@ describe('PairSyllable task', () => {
         const letterA = letters.find((l) => l.letter === 'А')!;
         act(() => {
           store.dispatch(
-            pairSyllableSlice.actions.dropOccurred({
+            pairSyllableSlice.actions.placeLetter({
               draggedId: letterM.id,
-              targetId: letterA.id,
               dropX: letterA.position.x + 10,
               dropY: letterA.position.y,
+              width_percent: 10,
+              height_percent: 10,
             })
           );
         });

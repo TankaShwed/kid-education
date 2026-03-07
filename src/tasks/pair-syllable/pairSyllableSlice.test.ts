@@ -51,11 +51,12 @@ describe('pairSyllableSlice', () => {
       const letter = store.getState().pairSyllable.letters[0]!;
 
       store.dispatch(
-        pairSyllableSlice.actions.dropOccurred({
+        pairSyllableSlice.actions.placeLetter({
           draggedId: letter.id,
-          targetId: null,
           dropX: 50,
           dropY: 30,
+          width_percent: 10,
+          height_percent: 10,
         })
       );
 
@@ -71,14 +72,15 @@ describe('pairSyllableSlice', () => {
       });
       store.dispatch(pairSyllableSlice.actions.reset(round));
       const letters = store.getState().pairSyllable.letters;
-      const [a, b] = [letters[0]!, letters[1]!];
+      const [a] = [letters[0]!, letters[1]!];
 
       store.dispatch(
-        pairSyllableSlice.actions.dropOccurred({
+        pairSyllableSlice.actions.placeLetter({
           draggedId: a.id,
-          targetId: b.id,
           dropX: 60,
           dropY: 40,
+          width_percent: 10,
+          height_percent: 10,
         })
       );
 

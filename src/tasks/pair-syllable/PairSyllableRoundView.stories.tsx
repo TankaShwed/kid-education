@@ -2,10 +2,10 @@ import type { Meta, StoryObj } from '@storybook/react';
 import { PairSyllableRoundView } from './PairSyllableRoundView';
 import type { PairSyllableLetter, FormedSyllable } from './pairSyllableSlice';
 
-const defaultRound = {
-  type: 'pairSyllable' as const,
-  syllables: ['МА', 'НО', 'КУ'] as const,
-  targetFind: 'МА' as const,
+const defaultRound: { type: 'pairSyllable'; syllables: string[]; targetFind: string } = {
+  type: 'pairSyllable',
+  syllables: ['МА', 'НО', 'КУ'],
+  targetFind: 'МА',
 };
 
 const sampleLetters: PairSyllableLetter[] = [
