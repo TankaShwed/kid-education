@@ -141,13 +141,10 @@ export const pairSyllableSlice = createSlice({
       }>
     ) {
       const { draggedId, targetId, dropX, dropY } = action.payload;
-      if (state.phase !== 'pairing') return;
-      if (targetId === null) {
         const letter = state.letters.find((l) => l.id === draggedId);
         if (letter) {
           letter.position = { x: dropX, y: dropY };
         }
-      }
     },
     /** Дроп отклонён (неверный порядок или слог не из раунда). Сага озвучивает фидбек. */
     pairRejected(

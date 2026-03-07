@@ -112,7 +112,6 @@ export function PairSyllableRoundView({
           letterId: string;
           letter: string;
         };
-        if (letterId === targetId) return;
         const { dropX, dropY } = getDropCoords(e);
         onDrop({ draggedId: letterId, targetId, dropX, dropY });
       } catch {
@@ -268,6 +267,5 @@ function customePosition(
   const dy = customPosition.ye - customPosition.ys;
   const x = letter.position.x + dx * 100 / clientWidth;
   const y = letter.position.y + dy * 100 / clientHeight;
-  console.log(x, y, clientWidth, clientHeight, dx, dy);
   return { x, y };
 }
