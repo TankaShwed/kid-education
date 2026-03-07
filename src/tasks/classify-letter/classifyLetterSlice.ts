@@ -1,7 +1,6 @@
 import { createSlice } from '@reduxjs/toolkit';
 import type { PayloadAction } from '@reduxjs/toolkit';
 import type { ClassifyLetterRound } from './types';
-import { isVowel } from '@/domain/letters';
 
 /** Одна буква на экране с позицией и статусом */
 export interface ClassifyLetterItem {
