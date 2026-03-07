@@ -28,7 +28,7 @@ const meta: Meta<typeof PairSyllableRoundView> = {
   args: {
     round: defaultRound,
     onStart: () => {},
-    onDropOnLetter: () => {},
+    onDrop: () => {},
     onChooseSyllable: () => {},
   },
 };

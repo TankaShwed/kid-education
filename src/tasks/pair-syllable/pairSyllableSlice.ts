@@ -35,6 +35,13 @@ export interface PairSyllableState {
 
 const AREA_W = 80;
 const AREA_H = 55;
+/** Минимальное расстояние между центрами букв (в %), чтобы не накладывались при разбросе */
+const MIN_DISTANCE_PERCENT = 14;
+const MAX_PLACEMENT_ATTEMPTS = 80;
+
+function distance(a: { x: number; y: number }, b: { x: number; y: number }) {
+  return Math.hypot(a.x - b.x, a.y - b.y);
+}
 
 function randomPosition(): { x: number; y: number } {
   return {
@@ -51,11 +58,25 @@ function buildLettersFromRound(round: PairSyllableRound): PairSyllableLetter[] {
     }
   }
   const shuffled = [...letters].sort(() => Math.random() - 0.5);
-  return shuffled.map((letter, index) => ({
-    id: `letter-${index}-${letter}-${Math.random().toString(36).slice(2, 8)}`,
-    letter,
-    position: randomPosition(),
-  }));
+  const result: PairSyllableLetter[] = [];
+  for (let i = 0; i < shuffled.length; i++) {
+    const letter = shuffled[i]!;
+    let pos = randomPosition();
+    let attempts = 0;
+    while (
+      result.some((r) => distance(r.position, pos) < MIN_DISTANCE_PERCENT) &&
+      attempts < MAX_PLACEMENT_ATTEMPTS
+    ) {
+      pos = randomPosition();
+      attempts += 1;
+    }
+    result.push({
+      id: `letter-${i}-${letter}-${Math.random().toString(36).slice(2, 8)}`,
+      letter,
+      position: pos,
+    });
+  }
+  return result;
 }
 
 const initialState: PairSyllableState = {
@@ -105,6 +126,29 @@ export const pairSyllableSlice = createSlice({
         syllable,
       });
     },
+    /**
+     * Сырой дроп: компонент передаёт куда и на что отпустили.
+     * targetId === null — дроп в пустое место: обновляем позицию буквы.
+     * targetId !== null — сага решает склейку (pairFormed/pairRejected).
+     */
+    dropOccurred(
+      state,
+      action: PayloadAction<{
+        draggedId: string;
+        targetId: string | null;
+        dropX: number;
+        dropY: number;
+      }>
+    ) {
+      const { draggedId, targetId, dropX, dropY } = action.payload;
+      if (state.phase !== 'pairing') return;
+      if (targetId === null) {
+        const letter = state.letters.find((l) => l.id === draggedId);
+        if (letter) {
+          letter.position = { x: dropX, y: dropY };
+        }
+      }
+    },
     /** Дроп отклонён (неверный порядок или слог не из раунда). Сага озвучивает фидбек. */
     pairRejected(
       _state,
@@ -136,6 +180,7 @@ export const {
   reset,
   startRound,
   instructionDone,
+  dropOccurred,
   pairFormed,
   pairRejected,
   setPhaseFinding,

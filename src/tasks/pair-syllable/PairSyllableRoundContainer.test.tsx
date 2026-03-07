@@ -1,6 +1,6 @@
 /**
- * Сага обновляет store асинхронно. DnD симулируем через dispatch pairFormed.
- * Ожидание — через await act + waitFor.
+ * Сага обновляет store асинхронно. DnD симулируем через dispatch dropOccurred (сырые данные);
+ * сага валидирует и диспатчит pairFormed/pairRejected.
  */
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import {
@@ -75,28 +75,99 @@ describe('PairSyllable task', () => {
       );
     });
 
-    describe('form all pairs via store then click correct syllable', () => {
+    describe('drop on letter (valid order) triggers pairFormed via saga', () => {
       beforeEach(async () => {
         const state = store.getState();
         const letters = state.pairSyllable.letters;
-        const idM = letters.find((l) => l.letter === 'М')?.id;
-        const idA = letters.find((l) => l.letter === 'А')?.id;
-        const idN = letters.find((l) => l.letter === 'Н')?.id;
-        const idO = letters.find((l) => l.letter === 'О')?.id;
-        expect(idM && idA && idN && idO).toBeDefined();
+        const letterM = letters.find((l) => l.letter === 'М');
+        const letterA = letters.find((l) => l.letter === 'А');
+        expect(letterM && letterA).toBeDefined();
         act(() => {
           store.dispatch(
-            pairSyllableSlice.actions.pairFormed({
-              syllable: 'МА',
-              letterIds: [idM!, idA!],
+            pairSyllableSlice.actions.dropOccurred({
+              draggedId: letterA!.id,
+              targetId: letterM!.id,
+              dropX: letterM!.position.x + 10,
+              dropY: letterM!.position.y,
             })
           );
         });
+        await act(async () => {
+          await waitFor(() => {
+            expect(store.getState().pairSyllable.letters.length).toBe(2);
+          });
+        });
+      });
+
+      it('should form pair MA and speak syllable', () => {
+        expect(mockTTS.speak).toHaveBeenCalledWith('ма', expect.any(Object));
+        expect(store.getState().pairSyllable.formedSyllables).toHaveLength(1);
+        expect(store.getState().pairSyllable.formedSyllables[0]!.syllable).toBe(
+          'МА'
+        );
+      });
+    });
+
+    describe('drop in empty place moves letter', () => {
+      let letterId: string;
+      beforeEach(() => {
+        const state = store.getState();
+        const letter = state.pairSyllable.letters[0]!;
+        letterId = letter.id;
         act(() => {
           store.dispatch(
-            pairSyllableSlice.actions.pairFormed({
-              syllable: 'НО',
-              letterIds: [idN!, idO!],
+            pairSyllableSlice.actions.dropOccurred({
+              draggedId: letter.id,
+              targetId: null,
+              dropX: 50,
+              dropY: 40,
+            })
+          );
+        });
+      });
+
+      it('should update letter position', () => {
+        const updated = store.getState().pairSyllable.letters.find(
+          (l) => l.id === letterId
+        );
+        expect(updated?.position).toEqual({ x: 50, y: 40 });
+      });
+    });
+
+    describe('form all pairs via dropOccurred then click correct syllable', () => {
+      beforeEach(async () => {
+        let state = store.getState();
+        let letters = state.pairSyllable.letters;
+        const letterM = letters.find((l) => l.letter === 'М')!;
+        const letterA = letters.find((l) => l.letter === 'А')!;
+        const letterN = letters.find((l) => l.letter === 'Н')!;
+        const letterO = letters.find((l) => l.letter === 'О')!;
+        act(() => {
+          store.dispatch(
+            pairSyllableSlice.actions.dropOccurred({
+              draggedId: letterA.id,
+              targetId: letterM.id,
+              dropX: letterM.position.x + 10,
+              dropY: letterM.position.y,
+            })
+          );
+        });
+        await act(async () => {
+          await waitFor(() => {
+            expect(store.getState().pairSyllable.letters.length).toBe(2);
+          });
+        });
+        state = store.getState();
+        letters = state.pairSyllable.letters;
+        const letterN2 = letters.find((l) => l.letter === 'Н')!;
+        const letterO2 = letters.find((l) => l.letter === 'О')!;
+        act(() => {
+          store.dispatch(
+            pairSyllableSlice.actions.dropOccurred({
+              draggedId: letterO2.id,
+              targetId: letterN2.id,
+              dropX: letterN2.position.x + 10,
+              dropY: letterN2.position.y,
             })
           );
         });
@@ -139,14 +210,28 @@ describe('PairSyllable task', () => {
       });
     });
 
-    describe('pairRejected wrongOrder', () => {
-      beforeEach(() => {
+    describe('dropOccurred wrongOrder triggers pairRejected', () => {
+      beforeEach(async () => {
+        const state = store.getState();
+        const letters = state.pairSyllable.letters;
+        const letterM = letters.find((l) => l.letter === 'М')!;
+        const letterA = letters.find((l) => l.letter === 'А')!;
         act(() => {
           store.dispatch(
-            pairSyllableSlice.actions.pairRejected({
-              reason: 'wrongOrder',
+            pairSyllableSlice.actions.dropOccurred({
+              draggedId: letterM.id,
+              targetId: letterA.id,
+              dropX: letterA.position.x + 10,
+              dropY: letterA.position.y,
             })
           );
+        });
+        await act(async () => {
+          await waitFor(() => {
+            expect(mockTTS.speak).toHaveBeenCalledWith(
+              'В слоге сначала согласная, потом гласная. Гласная должна быть справа.'
+            );
+          });
         });
       });
 

@@ -1,4 +1,5 @@
 import { call, put, select, takeLatest } from 'redux-saga/effects';
+import { isVowel } from '@/domain/letters';
 import { SYLLABLE_RATE } from '@/domain/tts';
 import type { SagaContext } from '@/store/sagaContext';
 import type { RootState } from '@/store/store';
@@ -6,6 +7,8 @@ import { pairSyllableSlice } from './pairSyllableSlice';
 
 const INSTRUCTION = 'Сложи гласную и согласную в слог.';
 const FIND_PHRASE = 'Найди слог';
+/** Минимальное смещение по X между согласной и гласной (в %), ~полширины буквы */
+const HALF_LETTER_WIDTH_PERCENT = 5;
 
 function* playInstruction(_action: unknown, context: SagaContext) {
   const { tts } = context;
@@ -15,6 +18,56 @@ function* playInstruction(_action: unknown, context: SagaContext) {
     // ignore
   }
   yield put(pairSyllableSlice.actions.instructionDone());
+}
+
+function* onDropOccurred(
+  action: ReturnType<typeof pairSyllableSlice.actions.dropOccurred>,
+  context: SagaContext
+) {
+  const { payload } = action;
+  const { draggedId, targetId, dropX, dropY } = payload;
+  if (targetId === null) return;
+
+  const state: RootState = yield select();
+  const { letters } = state.pairSyllable;
+  const round = state.session.currentRound;
+  if (round?.type !== 'pairSyllable') return;
+
+  const dragged = letters.find((l) => l.id === draggedId);
+  const target = letters.find((l) => l.id === targetId);
+  if (!dragged || !target) return;
+
+  const targetX = target.position.x;
+  const leftX = Math.min(dropX, targetX);
+  const rightX = Math.max(dropX, targetX);
+  const leftLetter = targetX < dropX ? target : dragged;
+  const rightLetter = targetX < dropX ? dragged : target;
+
+  const consonantLeft = !isVowel(leftLetter.letter);
+  const vowelRight = isVowel(rightLetter.letter);
+  const spacingOk = rightX - leftX >= HALF_LETTER_WIDTH_PERCENT;
+  const syllable = leftLetter.letter + rightLetter.letter;
+  const inRound = round.syllables.includes(syllable);
+
+  if (!consonantLeft || !vowelRight || !spacingOk) {
+    yield put(
+      pairSyllableSlice.actions.pairRejected({ reason: 'wrongOrder' })
+    );
+    return;
+  }
+  if (!inRound) {
+    yield put(
+      pairSyllableSlice.actions.pairRejected({ reason: 'notInRound' })
+    );
+    return;
+  }
+
+  yield put(
+    pairSyllableSlice.actions.pairFormed({
+      syllable,
+      letterIds: [draggedId, targetId],
+    })
+  );
 }
 
 function* onPairFormed(
@@ -110,6 +163,12 @@ export function* pairSyllableSaga(context: SagaContext) {
     pairSyllableSlice.actions.startRound.type as never,
     function* (a: unknown) {
       yield* playInstruction(a, context);
+    }
+  );
+  yield takeLatest(
+    pairSyllableSlice.actions.dropOccurred.type as never,
+    function* (a: ReturnType<typeof pairSyllableSlice.actions.dropOccurred>) {
+      yield* onDropOccurred(a, context);
     }
   );
   yield takeLatest(

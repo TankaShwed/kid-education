@@ -9,12 +9,29 @@ import './PairSyllableRoundView.css';
 
 const PAYLOAD_KEY = 'application/json';
 
+/** 1x1 прозрачный пиксель — убирает тень/ghost при перетаскивании */
+const EMPTY_DRAG_IMAGE: HTMLImageElement = (() => {
+  const img = document.createElement('img');
+  img.src =
+    'data:image/gif;base64,R0lGOODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7';
+  return img;
+})();
+
+/**
+ * Сырые данные дропа: куда и на что отпустили (targetId = null — в пустое место).
+ */
+export type DropPayload = {
+  draggedId: string;
+  targetId: string | null;
+  dropX: number;
+  dropY: number;
+};
+
 /**
  * Пропсы презентационного компонента «Сложи слог».
  *
  * @remarks
- * phase, letters, formedSyllables, hasStarted, spoken, wrongSyllableId из контейнера;
- * onStart, onDropOnLetter, onChooseSyllable — колбэки.
+ * onDrop передаёт только сырые данные; валидация в саге.
  */
 export interface PairSyllableRoundViewProps {
   round: PairSyllableRound;
@@ -25,7 +42,7 @@ export interface PairSyllableRoundViewProps {
   spoken: boolean;
   wrongSyllableId: string | null;
   onStart: () => void;
-  onDropOnLetter: (draggedId: string, targetId: string, dropX: number) => void;
+  onDrop: (payload: DropPayload) => void;
   onChooseSyllable: (syllableId: string) => void;
 }
 
@@ -38,11 +55,22 @@ export function PairSyllableRoundView({
   spoken,
   wrongSyllableId,
   onStart,
-  onDropOnLetter,
+  onDrop,
   onChooseSyllable,
 }: PairSyllableRoundViewProps) {
   const [draggingId, setDraggingId] = useState<string | null>(null);
   const lettersContainerRef = useRef<HTMLDivElement>(null);
+  const [customPosition, setCustomPosition] = useState<{ xs: number; ys: number, xe: number, ye: number } | null>(null);
+
+  const getDropCoords = useCallback((e: React.DragEvent) => {
+    const container = lettersContainerRef.current;
+    if (!container) return { dropX: 0, dropY: 0 };
+    const rect = container.getBoundingClientRect();
+    return {
+      dropX: ((e.clientX - rect.left) / rect.width) * 100,
+      dropY: ((e.clientY - rect.top) / rect.height) * 100,
+    };
+  }, []);
 
   const handleDragStart = useCallback(
     (e: React.DragEvent, letter: PairSyllableLetter) => {
@@ -52,6 +80,7 @@ export function PairSyllableRoundView({
         JSON.stringify({ letterId: letter.id, letter: letter.letter })
       );
       e.dataTransfer.effectAllowed = 'move';
+      e.dataTransfer.setDragImage(EMPTY_DRAG_IMAGE, 0, 0);
     },
     []
   );
@@ -63,10 +92,38 @@ export function PairSyllableRoundView({
   const preventDefault = useCallback((e: React.DragEvent) => {
     e.preventDefault();
     e.dataTransfer.dropEffect = 'move';
-  }, []);
+    let firstPosition = customPosition;
+    if (!firstPosition) {
+      firstPosition = { xs: e.screenX, ys: e.screenY, xe: e.screenX, ye: e.screenY };
+    }
+    setCustomPosition({ ...firstPosition, xe: e.screenX, ye: e.screenY });
+  }, [customPosition]);
 
-  const handleDrop = useCallback(
+  const handleDropOnLetter = useCallback(
     (e: React.DragEvent, targetId: string) => {
+      e.preventDefault();
+      e.stopPropagation();
+      setDraggingId(null);
+      setCustomPosition(null);
+      const raw = e.dataTransfer.getData(PAYLOAD_KEY);
+      if (!raw) return;
+      try {
+        const { letterId } = JSON.parse(raw) as {
+          letterId: string;
+          letter: string;
+        };
+        if (letterId === targetId) return;
+        const { dropX, dropY } = getDropCoords(e);
+        onDrop({ draggedId: letterId, targetId, dropX, dropY });
+      } catch {
+        // ignore
+      }
+    },
+    [onDrop, getDropCoords]
+  );
+
+  const handleDropOnContainer = useCallback(
+    (e: React.DragEvent) => {
       e.preventDefault();
       setDraggingId(null);
       const raw = e.dataTransfer.getData(PAYLOAD_KEY);
@@ -76,18 +133,13 @@ export function PairSyllableRoundView({
           letterId: string;
           letter: string;
         };
-        if (letterId === targetId) return;
-        const container = lettersContainerRef.current;
-        if (!container) return;
-        const rect = container.getBoundingClientRect();
-        const dropXPercent =
-          ((e.clientX - rect.left) / rect.width) * 100;
-        onDropOnLetter(letterId, targetId, dropXPercent);
+        const { dropX, dropY } = getDropCoords(e);
+        onDrop({ draggedId: letterId, targetId: null, dropX, dropY });
       } catch {
         // ignore
       }
     },
-    [onDropOnLetter]
+    [onDrop, getDropCoords]
   );
 
   if (!hasStarted) {
@@ -120,20 +172,22 @@ export function PairSyllableRoundView({
             ref={lettersContainerRef}
             className="pair-syllable-letters"
             data-testid="pair-syllable-letters"
+            onDragOver={preventDefault}
+            onDrop={handleDropOnContainer}
           >
             {letters.map((letter) => (
               <span
                 key={letter.id}
                 className={`letter-chip ${isVowel(letter.letter) ? 'vowel' : 'consonant'} ${draggingId === letter.id ? 'dragging' : ''}`}
                 style={{
-                  left: `${letter.position.x}%`,
-                  top: `${letter.position.y}%`,
+                  left: `${customePosition(letter, draggingId, customPosition, lettersContainerRef.current?.clientWidth ?? 0, lettersContainerRef.current?.clientHeight ?? 0).x}%`,
+                  top: `${customePosition(letter, draggingId, customPosition, lettersContainerRef.current?.clientWidth ?? 0, lettersContainerRef.current?.clientHeight ?? 0).y}%`,
                 }}
                 draggable
                 onDragStart={(e) => handleDragStart(e, letter)}
                 onDragEnd={handleDragEnd}
                 onDragOver={preventDefault}
-                onDrop={(e) => handleDrop(e, letter.id)}
+                onDrop={(e) => handleDropOnLetter(e, letter.id)}
                 data-testid={`pair-syllable-letter-${letter.id}`}
               >
                 {letter.letter}
@@ -198,4 +252,22 @@ export function PairSyllableRoundView({
       )}
     </div>
   );
+}
+
+function customePosition(
+  letter: PairSyllableLetter,
+  selectLetterId: string | null,
+  customPosition: { xs: number; ys: number, xe: number, ye: number } | null,
+  clientWidth: number,
+  clientHeight: number,
+): { x: number; y: number } {
+  if (!customPosition || letter.id !== selectLetterId || selectLetterId === null)
+    return letter.position;
+
+  const dx = customPosition.xe - customPosition.xs;
+  const dy = customPosition.ye - customPosition.ys;
+  const x = letter.position.x + dx * 100 / clientWidth;
+  const y = letter.position.y + dy * 100 / clientHeight;
+  console.log(x, y, clientWidth, clientHeight, dx, dy);
+  return { x, y };
 }

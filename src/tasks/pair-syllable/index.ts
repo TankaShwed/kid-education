@@ -1,4 +1,7 @@
 export { PairSyllableRoundContainer } from './PairSyllableRoundContainer';
 export { PairSyllableRoundView } from './PairSyllableRoundView';
 export { pairSyllableSlice } from './pairSyllableSlice';
-export type { PairSyllableRoundViewProps } from './PairSyllableRoundView';
+export type {
+  PairSyllableRoundViewProps,
+  DropPayload,
+} from './PairSyllableRoundView';

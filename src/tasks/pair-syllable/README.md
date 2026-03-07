@@ -20,13 +20,14 @@
 
 ## Состояние и события
 
-В store под ключом `pairSyllable`: фаза (`pairing` | `finding`), массив букв (с позициями), собранные слоги, флаги озвучки, статус фазы 2 (idle/correct/wrong), wrongSyllableId. События: startRound, dropOnLetter (в контейнере вычисляется порядок по X и диспатчится pairFormed или pairRejected), chooseSyllable (chooseCorrect/chooseWrong).
+В store под ключом `pairSyllable`: фаза (`pairing` | `finding`), массив букв (с позициями), собранные слоги, флаги озвучки, статус фазы 2 (idle/correct/wrong), wrongSyllableId. События: startRound, **dropOccurred** (сырые данные: draggedId, targetId \| null, dropX, dropY — при targetId=null редьюсер обновляет позицию буквы; при targetId≠null сага валидирует порядок и диспатчит pairFormed или pairRejected), chooseSyllable (chooseCorrect/chooseWrong).
 
 **Подробно:** `pairSyllableSlice.ts` (TSDoc).
 
 ## Сага
 
 - startRound → инструкция, instructionDone.
+- dropOccurred (targetId ≠ null) → по позициям цели и (dropX, dropY) определяет левую/правую букву; проверяет «согласная слева, гласная справа», полширины, слог в round.syllables; диспатчит pairFormed или pairRejected.
 - pairFormed → озвучка слога; при нуле букв — setPhaseFinding и «Найди слог» + targetFind.
 - pairRejected → фидбек по reason (wrongOrder / notInRound).
 - chooseCorrect → «Правильно», dispatchNextRound.
@@ -36,8 +37,8 @@
 
 ## UI
 
-- **PairSyllableRoundView** — презентационный компонент: фаза 1 (буквы с DnD, чипы собранных слогов), фаза 2 (подсказка «Найди слог X», кликабельные слоги). Колбэки onStart, onDropOnLetter(draggedId, targetId, dropX), onChooseSyllable.
-- **PairSyllableRoundContainer** — подписка на store, при дропе по dropX и позиции цели определяет левую/правую букву, проверяет «согласная слева, гласная справа» и полширины, слог в round.syllables; диспатчит pairFormed или pairRejected.
+- **PairSyllableRoundView** — презентационный компонент: фаза 1 (буквы с DnD, чипы собранных слогов), фаза 2 (подсказка «Найди слог X», кликабельные слоги). Колбэки onStart, **onDrop(payload)** — только сырые данные (draggedId, targetId \| null, dropX, dropY); при дропе на букву — targetId заполнен, при дропе в пустое место — targetId=null (буква остаётся на новой позиции). Тень при перетаскивании отключена (setDragImage прозрачного пикселя).
+- **PairSyllableRoundContainer** — подписка на store, при дропе диспатчит только **dropOccurred(payload)**; валидация и склейка — в саге.
 
 См. `PairSyllableRoundView.tsx`, `PairSyllableRoundContainer.tsx`, `PairSyllableRoundView.css`.
 

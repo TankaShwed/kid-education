@@ -8,6 +8,7 @@ import {
 import { pairSyllableSlice } from './pairSyllableSlice';
 import type { TTSProvider } from '@/domain/tts';
 import type { PairSyllableRound } from './types';
+import { useEffect } from 'react';
 
 const mockTTS: TTSProvider = {
   speak: (arg: string) => {
@@ -33,7 +34,14 @@ const defaultRound: PairSyllableRound = {
 
 const withStore = (round: PairSyllableRound = defaultRound) => {
   const storyStore = makeStoreWithRound(round);
+  
   function ReduxDecorator(Story: React.ComponentType) {
+    useEffect(() => {
+      const timer = setTimeout(() => {
+        storyStore.dispatch(pairSyllableSlice.actions.startRound());
+      }, 100);
+      return () => clearTimeout(timer);
+    });
     return (
       <Provider store={storyStore}>
         <Story />
