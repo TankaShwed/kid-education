@@ -55,12 +55,14 @@
   background: rgba(200, 50, 50, 0.9);
   color: #fff;
   border-color: rgba(180, 40, 40, 0.8);
+  border-radius: 0 10px 10px 0;
 }
 
 .pair-syllable-letters .letter-chip.consonant {
   background: rgba(0, 80, 180, 0.9);
   color: #fff;
   border-color: rgba(0, 60, 140, 0.8);
+  border-radius: 10px 0 0 10px;
 }
 
 .pair-syllable-letters .letter-chip.dragging {

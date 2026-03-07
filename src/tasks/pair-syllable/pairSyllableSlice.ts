@@ -131,20 +131,32 @@ export const pairSyllableSlice = createSlice({
      * targetId === null — дроп в пустое место: обновляем позицию буквы.
      * targetId !== null — сага решает склейку (pairFormed/pairRejected).
      */
-    dropOccurred(
+    placeLetter(
       state,
       action: PayloadAction<{
         draggedId: string;
-        targetId: string | null;
         dropX: number;
         dropY: number;
+        width_percent: number;
+        height_percent: number;
       }>
     ) {
-      const { draggedId, targetId, dropX, dropY } = action.payload;
+      const { draggedId, dropX, dropY } = action.payload;
         const letter = state.letters.find((l) => l.id === draggedId);
         if (letter) {
           letter.position = { x: dropX, y: dropY };
         }
+    },
+    placeSticked(state, action: PayloadAction<{
+      draggedId: string;
+      dropX: number;
+      dropY: number;
+    }>) {
+      const { draggedId, dropX, dropY } = action.payload;
+      const letter = state.letters.find((l) => l.id === draggedId);
+      if (letter) {
+        letter.position = { x: dropX, y: dropY };
+      }
     },
     /** Дроп отклонён (неверный порядок или слог не из раунда). Сага озвучивает фидбек. */
     pairRejected(
@@ -177,7 +189,7 @@ export const {
   reset,
   startRound,
   instructionDone,
-  dropOccurred,
+  placeLetter,
   pairFormed,
   pairRejected,
   setPhaseFinding,

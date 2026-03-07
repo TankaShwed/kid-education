@@ -8,7 +8,7 @@ import { pairSyllableSlice } from './pairSyllableSlice';
 const INSTRUCTION = 'Сложи гласную и согласную в слог.';
 const FIND_PHRASE = 'Найди слог';
 /** Минимальное смещение по X между согласной и гласной (в %), ~полширины буквы */
-const HALF_LETTER_WIDTH_PERCENT = 5;
+const HALF_LETTER_WIDTH_PERCENT = 10;
 
 function* playInstruction(_action: unknown, context: SagaContext) {
   const { tts } = context;
@@ -21,12 +21,19 @@ function* playInstruction(_action: unknown, context: SagaContext) {
 }
 
 function* onDropOccurred(
-  action: ReturnType<typeof pairSyllableSlice.actions.dropOccurred>,
+  action: ReturnType<typeof pairSyllableSlice.actions.placeLetter>,
   context: SagaContext
 ) {
   const { payload } = action;
-  const { draggedId, targetId, dropX, dropY } = payload;
-  if (targetId === null) return;
+  const { draggedId, dropX, dropY, width_percent, height_percent } = payload;
+  const [nearestdistance, nearestId] = yield select((state: RootState) => {
+    return state.pairSyllable.letters.filter((l) => l.id !== draggedId).map((el) => {
+      return [Math.hypot(el.position.x - dropX, el.position.y - dropY), el.id];
+    }).sort((a, b) => a[0] - b[0])[0];
+  });
+
+  // debugger;
+  if (nearestdistance > Math.hypot(width_percent, height_percent)) return;
 
   const state: RootState = yield select();
   const { letters } = state.pairSyllable;
@@ -34,38 +41,35 @@ function* onDropOccurred(
   if (round?.type !== 'pairSyllable') return;
 
   const dragged = letters.find((l) => l.id === draggedId);
-  const target = letters.find((l) => l.id === targetId);
+  const target = letters.find((l) => l.id === nearestId);
   if (!dragged || !target) return;
 
+  const ritght = dropX > target.position.x;
+  yield put(pairSyllableSlice.actions.placeSticked({
+    draggedId,
+    dropX: ritght ? target.position.x + width_percent : target.position.x - width_percent,
+    dropY: target.position.y,
+  }));
+
   const targetX = target.position.x;
-  const leftX = Math.min(dropX, targetX);
-  const rightX = Math.max(dropX, targetX);
   const leftLetter = targetX < dropX ? target : dragged;
   const rightLetter = targetX < dropX ? dragged : target;
 
   const consonantLeft = !isVowel(leftLetter.letter);
   const vowelRight = isVowel(rightLetter.letter);
-  const spacingOk = rightX - leftX >= HALF_LETTER_WIDTH_PERCENT;
   const syllable = leftLetter.letter + rightLetter.letter;
-  const inRound = round.syllables.includes(syllable);
+  console.log(leftLetter.letter, rightLetter.letter, consonantLeft, vowelRight);
 
-  if (!consonantLeft || !vowelRight || !spacingOk) {
+  if (!consonantLeft || !vowelRight) {
     yield put(
       pairSyllableSlice.actions.pairRejected({ reason: 'wrongOrder' })
     );
     return;
   }
-  if (!inRound) {
-    yield put(
-      pairSyllableSlice.actions.pairRejected({ reason: 'notInRound' })
-    );
-    return;
-  }
-
   yield put(
     pairSyllableSlice.actions.pairFormed({
       syllable,
-      letterIds: [draggedId, targetId],
+      letterIds: [leftLetter.id, rightLetter.id],
     })
   );
 }
@@ -166,8 +170,8 @@ export function* pairSyllableSaga(context: SagaContext) {
     }
   );
   yield takeLatest(
-    pairSyllableSlice.actions.dropOccurred.type as never,
-    function* (a: ReturnType<typeof pairSyllableSlice.actions.dropOccurred>) {
+    pairSyllableSlice.actions.placeLetter.type as never,
+    function* (a: ReturnType<typeof pairSyllableSlice.actions.placeLetter>) {
       yield* onDropOccurred(a, context);
     }
   );

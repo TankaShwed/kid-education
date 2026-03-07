@@ -30,7 +30,7 @@ export function PairSyllableRoundContainer() {
 
   const handleDrop = useCallback(
     (payload: DropPayload) => {
-      dispatch(pairSyllableSlice.actions.dropOccurred(payload));
+      dispatch(pairSyllableSlice.actions.placeLetter(payload));
     },
     [dispatch]
   );
