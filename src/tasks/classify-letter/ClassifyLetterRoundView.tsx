@@ -23,7 +23,6 @@ export interface ClassifyLetterRoundViewProps {
 const PAYLOAD_KEY = 'application/json';
 
 export function ClassifyLetterRoundView({
-  round,
   items,
   hasStarted,
   spoken,
