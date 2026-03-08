@@ -47,10 +47,8 @@ export const readWordPictureSlice = createSlice({
     instructionDone(state) {
       state.spoken = true;
     },
-    /** Пользователь нажал «Прочитать»; сага озвучивает слово по частям, затем readWordDone. */
-    readWord() {},
-    /** Сага закончила озвучку слова. */
-    readWordDone() {},
+    /** Пользователь нажал на слог; сага озвучивает только этот слог. Payload — текст слога (части). */
+    readPart(_state, _action: PayloadAction<string>) {},
     /** Выбран неверный вариант. Payload — id варианта; сага озвучивает фидбек и диспатчит wrongDone. */
     chooseWrong(state, action: PayloadAction<string>) {
       state.options = state.options.filter((o) => o.id !== action.payload);
@@ -71,8 +69,7 @@ export const {
   reset,
   startRound,
   instructionDone,
-  readWord,
-  readWordDone,
+  readPart,
   chooseWrong,
   wrongDone,
   chooseCorrect,

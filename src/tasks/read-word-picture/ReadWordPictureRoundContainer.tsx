@@ -6,7 +6,7 @@ import { readWordPictureSlice } from './readWordPictureSlice';
 /**
  * Контейнер задания «Прочитай слово и выбери картинку»: подключает View к store
  * и диспатчит экшены slice. Озвучка выполняется сагой по экшенам startRound,
- * readWord, chooseWrong, chooseCorrect.
+ * readPart, chooseWrong, chooseCorrect.
  */
 export function ReadWordPictureRoundContainer() {
   const dispatch = useAppDispatch();
@@ -23,9 +23,12 @@ export function ReadWordPictureRoundContainer() {
     dispatch(readWordPictureSlice.actions.startRound());
   }, [dispatch]);
 
-  const handleReadWord = useCallback(() => {
-    dispatch(readWordPictureSlice.actions.readWord());
-  }, [dispatch]);
+  const handleReadPart = useCallback(
+    (part: string) => {
+      dispatch(readWordPictureSlice.actions.readPart(part));
+    },
+    [dispatch]
+  );
 
   const handleChooseOption = useCallback(
     (optionId: string) => {
@@ -49,7 +52,7 @@ export function ReadWordPictureRoundContainer() {
       hasStarted={hasStarted}
       spoken={spoken}
       onStart={handleStart}
-      onReadWord={handleReadWord}
+      onReadPart={handleReadPart}
       onChooseOption={handleChooseOption}
     />
   );

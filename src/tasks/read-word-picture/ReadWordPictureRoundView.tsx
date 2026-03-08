@@ -14,40 +14,55 @@ export interface ReadWordPictureRoundViewProps {
   hasStarted: boolean;
   spoken: boolean;
   onStart: () => void;
-  onReadWord: () => void;
+  onReadPart: (part: string) => void;
   onChooseOption: (optionId: string) => void;
 }
 
-/** Рендер слова по слогам: части из splitWordIntoParts, буквы в span с классами vowel/consonant. */
-function WordBySyllables({ word }: { word: string }) {
+/** Рендер слова по слогам: каждая часть кликабельна, по клику озвучивается только этот слог. */
+function WordBySyllables({
+  word,
+  onReadPart,
+}: {
+  word: string;
+  onReadPart: (part: string) => void;
+}) {
   const parts = splitWordIntoParts(word);
 
   return (
     <span
       className="read-word-picture-word"
       data-testid="read-word-picture-word"
-      role="text"
+      role="group"
+      aria-label="Слово по слогам"
     >
       {parts.map((part, idx) => {
         if (part.length === 2) {
           return (
-            <span
+            <button
               key={`${idx}-${part}`}
+              type="button"
               className="read-word-picture-syllable-chip"
+              onClick={() => onReadPart(part)}
+              aria-label={`Прочитать слог ${part}`}
+              data-testid={`read-word-picture-syllable-${idx}`}
             >
               <span className="letter-chip consonant">{part[0]}</span>
               <span className="letter-chip vowel">{part[1]}</span>
-            </span>
+            </button>
           );
         }
         const cls = isVowel(part) ? 'vowel' : 'consonant';
         return (
-          <span
+          <button
             key={`${idx}-${part}`}
+            type="button"
             className={`read-word-picture-letter-single letter-chip ${cls}`}
+            onClick={() => onReadPart(part)}
+            aria-label={`Прочитать ${part}`}
+            data-testid={`read-word-picture-syllable-${idx}`}
           >
             {part}
-          </span>
+          </button>
         );
       })}
     </span>
@@ -62,7 +77,7 @@ export function ReadWordPictureRoundView({
   hasStarted,
   spoken,
   onStart,
-  onReadWord,
+  onReadPart,
   onChooseOption,
 }: ReadWordPictureRoundViewProps) {
   if (!hasStarted) {
@@ -90,17 +105,8 @@ export function ReadWordPictureRoundView({
       data-testid="read-word-picture-round"
     >
       <div className="read-word-picture-word-wrap">
-        <WordBySyllables word={round.word} />
+        <WordBySyllables word={round.word} onReadPart={onReadPart} />
       </div>
-      <button
-        type="button"
-        className="read-word-button"
-        onClick={onReadWord}
-        aria-label="Прочитать слово"
-        data-testid="read-word-picture-read-button"
-      >
-        Прочитать
-      </button>
       <div
         className="read-word-picture-options"
         role="group"

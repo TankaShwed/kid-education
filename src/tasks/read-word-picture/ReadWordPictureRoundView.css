@@ -35,10 +35,29 @@
   justify-content: center;
 }
 
-.read-word-picture-syllable-chip,
+/* Кнопка-обёртка слога (C+V): без своей обводки, клик озвучивает слог */
+.read-word-picture-syllable-chip {
+  display: inline-flex;
+  align-items: center;
+  font-family: inherit;
+  cursor: pointer;
+  padding: 0;
+  margin: 0;
+  background: transparent;
+  border: none;
+  border-radius: 0;
+}
+
+.read-word-picture-syllable-chip:hover {
+  opacity: 0.9;
+}
+
+/* Одиночная буква (кнопка) — сохраняем стили letter-chip */
 .read-word-picture-letter-single {
   display: inline-flex;
   align-items: center;
+  font-family: inherit;
+  cursor: pointer;
 }
 
 .read-word-picture-word .letter-chip {
@@ -69,22 +88,6 @@
 
 .read-word-picture-word .read-word-picture-letter-single.letter-chip {
   border-radius: 10px;
-}
-
-.read-word-picture-round .read-word-button {
-  padding: 0.6rem 1.25rem;
-  font-size: 1.1rem;
-  font-weight: 600;
-  border: 2px solid #333;
-  border-radius: 10px;
-  background: #f0f8ff;
-  cursor: pointer;
-  margin-bottom: 1.25rem;
-  transition: background 0.15s;
-}
-
-.read-word-picture-round .read-word-button:hover {
-  background: #d0e8ff;
 }
 
 .read-word-picture-options {

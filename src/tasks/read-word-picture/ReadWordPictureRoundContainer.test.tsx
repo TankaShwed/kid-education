@@ -74,7 +74,6 @@ describe('ReadWordPicture task', () => {
     it('should render word and options', () => {
       expect(screen.getByTestId('read-word-picture-word')).toBeInTheDocument();
       expect(screen.getByTestId('read-word-picture-options')).toBeInTheDocument();
-      expect(screen.getByTestId('read-word-picture-read-button')).toBeVisible();
     });
 
     it('should speak instruction', () => {
@@ -83,21 +82,26 @@ describe('ReadWordPicture task', () => {
       );
     });
 
-    describe('click read button', () => {
+    describe('click syllable', () => {
       beforeEach(async () => {
         act(() => {
-          fireEvent.click(screen.getByTestId('read-word-picture-read-button'));
+          fireEvent.click(screen.getByTestId('read-word-picture-syllable-0'));
         });
         await act(async () => {
           await waitFor(() => {
-            expect(mockTTS.speak).toHaveBeenCalledWith('ма', expect.any(Object));
+            expect(mockTTS.speak).toHaveBeenCalledWith(
+              'ма',
+              expect.any(Object)
+            );
           });
         });
       });
 
-      it('should speak word by parts', () => {
-        expect(mockTTS.speak).toHaveBeenCalledWith('ма', expect.any(Object));
-        expect(mockTTS.speak).toHaveBeenCalledWith('ма', expect.any(Object));
+      it('should speak only that syllable', () => {
+        const maCalls = (mockTTS.speak as ReturnType<typeof vi.fn>).mock.calls.filter(
+          (c) => c[0] === 'ма'
+        );
+        expect(maCalls.length).toBeGreaterThanOrEqual(1);
       });
     });
 

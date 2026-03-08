@@ -1,6 +1,5 @@
 import { call, put, select, takeLatest } from 'redux-saga/effects';
 import { SYLLABLE_RATE } from '@/domain/tts';
-import { splitWordIntoParts } from '@/domain/wordSyllables';
 import type { SagaContext } from '@/store/sagaContext';
 import type { ReadWordPictureRound } from '@/domain/types';
 import { readWordPictureSlice } from './readWordPictureSlice';
@@ -22,20 +21,16 @@ function* playInstruction(_action: unknown, context: SagaContext) {
   }
 }
 
-function* playWordByParts(_action: unknown, context: SagaContext) {
+function* playPart(
+  action: ReturnType<typeof readWordPictureSlice.actions.readPart>,
+  context: SagaContext
+) {
   const { tts } = context;
-  const state: {
-    session: { currentRound: ReadWordPictureRound | null };
-  } = yield select();
-  const round = state.session.currentRound;
-  if (round?.type !== 'readWordPicture') return;
-  const parts = splitWordIntoParts(round.word);
+  const part = action.payload;
   try {
-    for (const part of parts) {
-      yield call([tts, tts.speak], part.toLowerCase(), { rate: SYLLABLE_RATE });
-    }
-  } finally {
-    yield put(readWordPictureSlice.actions.readWordDone());
+    yield call([tts, tts.speak], part.toLowerCase(), { rate: SYLLABLE_RATE });
+  } catch {
+    // ignore
   }
 }
 
@@ -79,7 +74,7 @@ function* playCorrectAndNextRound(_action: unknown, context: SagaContext) {
  *
  * @remarks
  * - startRound — озвучивает инструкцию, диспатчит instructionDone.
- * - readWord — озвучивает слово по частям (splitWordIntoParts), диспатчит readWordDone.
+ * - readPart(part) — озвучивает только выбранный слог (часть слова).
  * - chooseWrong — озвучивает фидбек, диспатчит wrongDone.
  * - chooseCorrect — озвучивает «Правильно», dispatchNextRound().
  */
@@ -91,9 +86,9 @@ export function* readWordPictureSaga(context: SagaContext) {
     }
   );
   yield takeLatest(
-    readWordPictureSlice.actions.readWord.type as never,
-    function* (a: unknown) {
-      yield* playWordByParts(a, context);
+    readWordPictureSlice.actions.readPart.type as never,
+    function* (a: ReturnType<typeof readWordPictureSlice.actions.readPart>) {
+      yield* playPart(a, context);
     }
   );
   yield takeLatest(
