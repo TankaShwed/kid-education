@@ -15,7 +15,5 @@ export interface PairSyllableTaskConfig {
 export interface PairSyllableRound {
   type: 'pairSyllable';
   /** Слоги, которые нужно собрать из разбросанных букв (3–4 слога) */
-  syllables: Syllable[];
-  /** Слог, который нужно найти кликом в фазе 2 (один из syllables) */
-  targetFind: Syllable;
+  source_syllables: Syllable[];
 }

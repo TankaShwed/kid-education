@@ -13,11 +13,8 @@ export function createPairSyllableRound(): PairSyllableRound {
   const pool = [...SYLLABLES].sort(() => Math.random() - 0.5);
   const count = Math.min(SYLLABLES_PER_ROUND, pool.length);
   const syllables = pool.slice(0, count) as Syllable[];
-  const targetIndex = Math.floor(Math.random() * syllables.length);
-  const targetFind = syllables[targetIndex]!;
   return {
     type: 'pairSyllable',
-    syllables,
-    targetFind,
+    source_syllables: syllables,
   };
 }

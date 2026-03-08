@@ -7,6 +7,7 @@ import type {
 import { isVowel } from '@/domain/letters';
 import './PairSyllableRoundView.css';
 import { flyPosition } from './tools';
+import { Syllable } from '@/domain/types';
 
 const PAYLOAD_KEY = 'application/json';
 
@@ -40,6 +41,7 @@ export interface PairSyllableRoundViewProps {
   phase: 'pairing' | 'finding';
   letters: PairSyllableLetter[];
   formedSyllables: FormedSyllable[];
+  targetSyllable: Syllable;
   hasStarted: boolean;
   spoken: boolean;
   wrongSyllableId: string | null;
@@ -53,6 +55,7 @@ export function PairSyllableRoundView({
   phase,
   letters,
   formedSyllables,
+  targetSyllable,
   hasStarted,
   spoken,
   wrongSyllableId,
@@ -255,7 +258,7 @@ export function PairSyllableRoundView({
       {phase === 'finding' && (
         <>
           <p className="finding-prompt" data-testid="pair-syllable-finding-prompt">
-            Найди слог {round.targetFind}
+            Найди слог {targetSyllable}
           </p>
           <div
             className="pair-syllable-choices"

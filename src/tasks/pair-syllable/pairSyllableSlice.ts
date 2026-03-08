@@ -52,7 +52,7 @@ function randomPosition(): { x: number; y: number } {
 
 function buildLettersFromRound(round: PairSyllableRound): PairSyllableLetter[] {
   const letters: string[] = [];
-  for (const syl of round.syllables) {
+  for (const syl of round.source_syllables) {
     for (const char of syl) {
       letters.push(char);
     }

@@ -28,8 +28,7 @@ function makeStoreWithRound(round: PairSyllableRound) {
 
 const defaultRound: PairSyllableRound = {
   type: 'pairSyllable',
-  syllables: ['МА', 'НО', 'КУ'],
-  targetFind: 'МА',
+  source_syllables: ['МА', 'НО', 'КУ'],
 };
 
 const withStore = (round: PairSyllableRound = defaultRound) => {
@@ -69,8 +68,7 @@ export const TwoSyllables: Story = {
   decorators: [
     withStore({
       type: 'pairSyllable',
-      syllables: ['МА', 'НО'],
-      targetFind: 'НО',
+      source_syllables: ['МА', 'НО'],
     }),
   ],
 };

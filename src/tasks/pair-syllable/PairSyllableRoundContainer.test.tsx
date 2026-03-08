@@ -22,8 +22,7 @@ import type { PairSyllableRound } from './types';
 
 const defaultRound: PairSyllableRound = {
   type: 'pairSyllable',
-  syllables: ['МА', 'НО'],
-  targetFind: 'МА',
+  source_syllables: ['МА', 'НО'],
 };
 
 function makeStoreWithRound(round: PairSyllableRound, tts: TTSProvider) {
