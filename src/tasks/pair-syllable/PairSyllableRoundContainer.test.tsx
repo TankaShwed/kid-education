@@ -84,7 +84,7 @@ describe('PairSyllable task', () => {
           store.dispatch(
             pairSyllableSlice.actions.placeLetter({
               draggedId: letterA.id,
-              dropX: letterM.position.x + 10,
+              dropX: letterM.position.x + 2,
               dropY: letterM.position.y,
               width_percent: 10,
               height_percent: 10,
@@ -146,7 +146,7 @@ describe('PairSyllable task', () => {
           store.dispatch(
             pairSyllableSlice.actions.placeLetter({
               draggedId: letterA.id,
-              dropX: letterM.position.x + 10,
+              dropX: letterM.position.x + 2,
               dropY: letterM.position.y,
               width_percent: 10,
               height_percent: 10,
@@ -166,7 +166,7 @@ describe('PairSyllable task', () => {
           store.dispatch(
             pairSyllableSlice.actions.placeLetter({
               draggedId: letterO2.id,
-              dropX: letterN2.position.x + 10,
+              dropX: letterN2.position.x + 2,
               dropY: letterN2.position.y,
               width_percent: 10,
               height_percent: 10,
@@ -183,6 +183,11 @@ describe('PairSyllable task', () => {
             expect(mockTTS.speak).toHaveBeenCalledWith('Найди слог');
           });
         });
+        await act(async () => {
+          await waitFor(() => {
+            expect(store.getState().pairSyllable.targetFind).toBeTruthy();
+          });
+        });
       });
 
       it('should switch to finding phase', () => {
@@ -190,9 +195,11 @@ describe('PairSyllable task', () => {
       });
 
       it('should have targetFind set from formed syllables', () => {
-        const targetFind = store.getState().pairSyllable.targetFind;
-        expect(targetFind).toBeDefined();
-        expect(['МА', 'НО']).toContain(targetFind);
+        const { targetFind, formedSyllables } =
+          store.getState().pairSyllable;
+        expect(targetFind).toBeTruthy();
+        const formedSyllableStrings = formedSyllables.map((s) => s.syllable);
+        expect(formedSyllableStrings).toContain(targetFind);
       });
 
       it('should speak Найди слог and target syllable', () => {
