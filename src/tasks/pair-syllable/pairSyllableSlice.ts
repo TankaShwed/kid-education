@@ -21,12 +21,14 @@ export interface FormedSyllable {
  *
  * @remarks
  * phase: pairing — сборка пар букв; finding — поиск слога кликом.
- * letters — непарные буквы; formedSyllables — собранные слоги.
+ * targetFind задаётся сагой при переходе в finding (случайный из formedSyllables).
  */
 export interface PairSyllableState {
   phase: 'pairing' | 'finding';
   letters: PairSyllableLetter[];
   formedSyllables: FormedSyllable[];
+  /** Целевой слог для фазы «найди слог»; выбирается при переходе в finding. */
+  targetFind: Syllable | null;
   hasStarted: boolean;
   spoken: boolean;
   findingStatus: 'idle' | 'correct' | 'wrong';
@@ -83,6 +85,7 @@ const initialState: PairSyllableState = {
   phase: 'pairing',
   letters: [],
   formedSyllables: [],
+  targetFind: null,
   hasStarted: false,
   spoken: false,
   findingStatus: 'idle',
@@ -99,6 +102,7 @@ export const pairSyllableSlice = createSlice({
         phase: 'pairing',
         letters: buildLettersFromRound(action.payload),
         formedSyllables: [],
+        targetFind: null,
         hasStarted: false,
         spoken: false,
         findingStatus: 'idle',
@@ -165,6 +169,10 @@ export const pairSyllableSlice = createSlice({
     ) {
       // состояние букв не меняется
     },
+    /** Целевой слог для фазы 2; вызывается сагой при переходе в finding. */
+    setTargetFind(state, action: PayloadAction<Syllable>) {
+      state.targetFind = action.payload;
+    },
     /** Все пары собраны; переключить в фазу «найди слог». Вызывается сагой. */
     setPhaseFinding(state) {
       state.phase = 'finding';
@@ -192,6 +200,7 @@ export const {
   placeLetter,
   pairFormed,
   pairRejected,
+  setTargetFind,
   setPhaseFinding,
   chooseCorrect,
   chooseWrong,

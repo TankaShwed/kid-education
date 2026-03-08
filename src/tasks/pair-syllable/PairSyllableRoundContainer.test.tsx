@@ -1,6 +1,6 @@
 /**
- * Сага обновляет store асинхронно. DnD симулируем через dispatch dropOccurred (сырые данные);
- * сага валидирует и диспатчит pairFormed/pairRejected.
+ * Интеграционные сценарии контейнера: действия в beforeEach, проверки в it.
+ * DnD симулируем через dispatch placeLetter; targetFind выбирается сагой при переходе в finding.
  */
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import {
@@ -74,19 +74,18 @@ describe('PairSyllable task', () => {
       );
     });
 
-    describe('drop on letter (valid order) triggers pairFormed via saga', () => {
+    describe('place letter on letter (valid order)', () => {
       beforeEach(async () => {
         const state = store.getState();
         const letters = state.pairSyllable.letters;
-        const letterM = letters.find((l) => l.letter === 'М');
-        const letterA = letters.find((l) => l.letter === 'А');
-        expect(letterM && letterA).toBeDefined();
+        const letterM = letters.find((l) => l.letter === 'М')!;
+        const letterA = letters.find((l) => l.letter === 'А')!;
         act(() => {
           store.dispatch(
             pairSyllableSlice.actions.placeLetter({
-              draggedId: letterA!.id,
-              dropX: letterM!.position.x + 10,
-              dropY: letterM!.position.y,
+              draggedId: letterA.id,
+              dropX: letterM.position.x + 10,
+              dropY: letterM.position.y,
               width_percent: 10,
               height_percent: 10,
             })
@@ -99,16 +98,18 @@ describe('PairSyllable task', () => {
         });
       });
 
-      it('should form pair MA and speak syllable', () => {
+      it('should form one pair and speak syllable', () => {
         expect(mockTTS.speak).toHaveBeenCalledWith('ма', expect.any(Object));
-        expect(store.getState().pairSyllable.formedSyllables).toHaveLength(1);
-        expect(store.getState().pairSyllable.formedSyllables[0]!.syllable).toBe(
-          'МА'
-        );
+      });
+
+      it('should have one formed syllable MA', () => {
+        const formed = store.getState().pairSyllable.formedSyllables;
+        expect(formed).toHaveLength(1);
+        expect(formed[0]!.syllable).toBe('МА');
       });
     });
 
-    describe('drop in empty place moves letter', () => {
+    describe('drop in empty place', () => {
       let letterId: string;
       beforeEach(() => {
         const state = store.getState();
@@ -135,7 +136,7 @@ describe('PairSyllable task', () => {
       });
     });
 
-    describe('form all pairs via dropOccurred then click correct syllable', () => {
+    describe('form all pairs', () => {
       beforeEach(async () => {
         let state = store.getState();
         let letters = state.pairSyllable.letters;
@@ -182,36 +183,62 @@ describe('PairSyllable task', () => {
             expect(mockTTS.speak).toHaveBeenCalledWith('Найди слог');
           });
         });
-        const targetSyllableId = store
-          .getState()
-          .pairSyllable.formedSyllables.find(
-            (s) => s.syllable === defaultRound.targetFind
-          )?.id;
-        expect(targetSyllableId).toBeDefined();
-        fireEvent.click(
-          screen.getByTestId(`pair-syllable-choose-${targetSyllableId}`)
+      });
+
+      it('should switch to finding phase', () => {
+        expect(store.getState().pairSyllable.phase).toBe('finding');
+      });
+
+      it('should have targetFind set from formed syllables', () => {
+        const targetFind = store.getState().pairSyllable.targetFind;
+        expect(targetFind).toBeDefined();
+        expect(['МА', 'НО']).toContain(targetFind);
+      });
+
+      it('should speak Найди слог and target syllable', () => {
+        expect(mockTTS.speak).toHaveBeenCalledWith('Найди слог');
+        const targetFind = store.getState().pairSyllable.targetFind;
+        expect(mockTTS.speak).toHaveBeenCalledWith(
+          targetFind!.toLowerCase(),
+          expect.any(Object)
         );
-        await act(async () => {
-          await waitFor(() => {
-            expect(mockTTS.speak).toHaveBeenCalledWith('Правильно');
+      });
+
+      it('should have two formed syllables', () => {
+        expect(store.getState().pairSyllable.formedSyllables).toHaveLength(2);
+      });
+
+      describe('click correct syllable', () => {
+        beforeEach(async () => {
+          const targetFind = store.getState().pairSyllable.targetFind;
+          const targetSyllableId = store
+            .getState()
+            .pairSyllable.formedSyllables.find(
+              (s) => s.syllable === targetFind
+            )?.id;
+          act(() => {
+            fireEvent.click(
+              screen.getByTestId(`pair-syllable-choose-${targetSyllableId}`)
+            );
+          });
+          await act(async () => {
+            await waitFor(() => {
+              expect(mockTTS.speak).toHaveBeenCalledWith('Правильно');
+            });
           });
         });
-      });
 
-      it('should speak syllable after each pair and then Find syllable', () => {
-        expect(mockTTS.speak).toHaveBeenCalledWith('ма', expect.any(Object));
-        expect(mockTTS.speak).toHaveBeenCalledWith('но', expect.any(Object));
-        expect(mockTTS.speak).toHaveBeenCalledWith('Найди слог');
-        expect(mockTTS.speak).toHaveBeenCalledWith('ма', expect.any(Object));
-      });
+        it('should speak Правильно', () => {
+          expect(mockTTS.speak).toHaveBeenCalledWith('Правильно');
+        });
 
-      it('should speak Правильно and show start for next round', () => {
-        expect(mockTTS.speak).toHaveBeenCalledWith('Правильно');
-        expect(screen.getByTestId('pair-syllable-start')).toBeVisible();
+        it('should show start button for next round', () => {
+          expect(screen.getByTestId('pair-syllable-start')).toBeVisible();
+        });
       });
     });
 
-    describe('dropOccurred wrongOrder triggers pairRejected', () => {
+    describe('place letter wrong order (consonant on vowel)', () => {
       beforeEach(async () => {
         const state = store.getState();
         const letters = state.pairSyllable.letters;
@@ -221,7 +248,7 @@ describe('PairSyllable task', () => {
           store.dispatch(
             pairSyllableSlice.actions.placeLetter({
               draggedId: letterM.id,
-              dropX: letterA.position.x + 10,
+              dropX: letterA.position.x + 2,
               dropY: letterA.position.y,
               width_percent: 10,
               height_percent: 10,
@@ -235,6 +262,12 @@ describe('PairSyllable task', () => {
             );
           });
         });
+      });
+
+      it('should speak wrongOrder feedback', () => {
+        expect(mockTTS.speak).toHaveBeenCalledWith(
+          'В слоге сначала согласная, потом гласная. Гласная должна быть справа.'
+        );
       });
 
       it('should not change letters count', () => {

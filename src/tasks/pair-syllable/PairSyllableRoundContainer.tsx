@@ -19,6 +19,7 @@ export function PairSyllableRoundContainer() {
     phase,
     letters,
     formedSyllables,
+    targetFind,
     hasStarted,
     spoken,
     wrongSyllableId,
@@ -40,13 +41,13 @@ export function PairSyllableRoundContainer() {
       if (!round || round.type !== 'pairSyllable') return;
       const formed = formedSyllables.find((s) => s.id === syllableId);
       if (!formed) return;
-      if (formed.syllable === round.targetFind) {
+      if (targetFind !== null && formed.syllable === targetFind) {
         dispatch(pairSyllableSlice.actions.chooseCorrect());
       } else {
         dispatch(pairSyllableSlice.actions.chooseWrong(syllableId));
       }
     },
-    [dispatch, formedSyllables, round]
+    [dispatch, formedSyllables, round, targetFind]
   );
 
   if (!round) return null;
@@ -57,6 +58,7 @@ export function PairSyllableRoundContainer() {
       phase={phase}
       letters={letters}
       formedSyllables={formedSyllables}
+      targetSyllable={targetFind ?? ''}
       hasStarted={hasStarted}
       spoken={spoken}
       wrongSyllableId={wrongSyllableId}

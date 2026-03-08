@@ -1,11 +1,11 @@
 import type { Meta, StoryObj } from '@storybook/react';
 import { PairSyllableRoundView } from './PairSyllableRoundView';
 import type { PairSyllableLetter, FormedSyllable } from './pairSyllableSlice';
+import type { PairSyllableRound } from './types';
 
-const defaultRound: { type: 'pairSyllable'; syllables: string[]; targetFind: string } = {
+const defaultRound: PairSyllableRound = {
   type: 'pairSyllable',
-  syllables: ['МА', 'НО', 'КУ'],
-  targetFind: 'МА',
+  source_syllables: ['МА', 'НО', 'КУ'],
 };
 
 const sampleLetters: PairSyllableLetter[] = [
@@ -43,6 +43,7 @@ export const Default: Story = {
     phase: 'pairing',
     letters: [],
     formedSyllables: [],
+    targetSyllable: '',
     hasStarted: false,
     spoken: false,
     wrongSyllableId: null,
@@ -56,6 +57,7 @@ export const Pairing: Story = {
     phase: 'pairing',
     letters: sampleLetters,
     formedSyllables: [],
+    targetSyllable: '',
     hasStarted: true,
     spoken: true,
     wrongSyllableId: null,
@@ -72,6 +74,7 @@ export const PartialPairs: Story = {
       { id: 'l6', letter: 'У', position: { x: 75, y: 65 } },
     ],
     formedSyllables: sampleFormed,
+    targetSyllable: '',
     hasStarted: true,
     spoken: true,
     wrongSyllableId: null,
@@ -89,6 +92,7 @@ export const Finding: Story = {
       { id: 's2', syllable: 'НО' },
       { id: 's3', syllable: 'КУ' },
     ],
+    targetSyllable: 'НО',
     hasStarted: true,
     spoken: true,
     wrongSyllableId: null,
@@ -106,6 +110,7 @@ export const FindingWrong: Story = {
       { id: 's2', syllable: 'НО' },
       { id: 's3', syllable: 'КУ' },
     ],
+    targetSyllable: 'МА',
     hasStarted: true,
     spoken: true,
     wrongSyllableId: 's2',

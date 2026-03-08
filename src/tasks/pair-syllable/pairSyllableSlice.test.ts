@@ -5,8 +5,7 @@ import type { PairSyllableRound } from './types';
 
 const round: PairSyllableRound = {
   type: 'pairSyllable',
-  syllables: ['МА', 'НО', 'КУ'],
-  targetFind: 'МА',
+  source_syllables: ['МА', 'НО', 'КУ'],
 };
 
 function minDistance(letters: { position: { x: number; y: number } }[]): number {
@@ -42,7 +41,7 @@ describe('pairSyllableSlice', () => {
     });
   });
 
-  describe('dropOccurred', () => {
+  describe('placeLetter', () => {
     it('should update letter position when targetId is null', () => {
       const store = configureStore({
         reducer: { pairSyllable: pairSyllableSlice.reducer },

@@ -90,12 +90,19 @@ function* onPairFormed(
   }
   const state: RootState = yield select();
   if (state.pairSyllable.letters.length === 0) {
+    const formed = state.pairSyllable.formedSyllables;
+    if (formed.length > 0) {
+      const targetSyllable =
+        formed[Math.floor(Math.random() * formed.length)]!.syllable;
+      yield put(pairSyllableSlice.actions.setTargetFind(targetSyllable));
+    }
     yield put(pairSyllableSlice.actions.setPhaseFinding());
-    const round = state.session.currentRound;
-    if (round?.type === 'pairSyllable') {
+    const stateAfter: RootState = yield select();
+    const targetFind = stateAfter.pairSyllable.targetFind;
+    if (targetFind) {
       try {
         yield call([tts, tts.speak], FIND_PHRASE);
-        yield call([tts, tts.speak], round.targetFind.toLowerCase(), {
+        yield call([tts, tts.speak], targetFind.toLowerCase(), {
           rate: SYLLABLE_RATE,
         });
       } catch {

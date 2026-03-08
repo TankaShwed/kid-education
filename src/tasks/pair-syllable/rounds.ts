@@ -6,8 +6,8 @@ import { SYLLABLES } from '@/domain/syllables';
 const SYLLABLES_PER_ROUND = 4;
 
 /**
- * Создать новый раунд «сложи слог»: 3–4 слога из SYLLABLES, буквы раунда = все буквы этих слогов;
- * targetFind — один из выбранных слогов для фазы «найди слог».
+ * Создать новый раунд «сложи слог»: 3–4 слога из SYLLABLES, буквы раунда = все буквы этих слогов.
+ * Целевой слог для фазы «найди слог» выбирается сагой после сборки всех пар (случайно из formedSyllables).
  */
 export function createPairSyllableRound(): PairSyllableRound {
   const pool = [...SYLLABLES].sort(() => Math.random() - 0.5);
