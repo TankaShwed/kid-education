@@ -9,6 +9,7 @@ import { PickSyllableRoundContainer } from '@/tasks/pick-syllable';
 import { ComposeSyllableRoundContainer } from '@/tasks/compose-syllable';
 import { ClassifyLetterRoundContainer } from '@/tasks/classify-letter';
 import { PairSyllableRoundContainer } from '@/tasks/pair-syllable';
+import { ReadWordPictureRoundContainer } from '@/tasks/read-word-picture';
 import { DifficultyPicker } from '@/components/DifficultyPicker';
 import './App.css';
 
@@ -77,6 +78,14 @@ export default function App() {
           >
             Сложи слог
           </button>
+          <button
+            type="button"
+            className={taskType === 'readWordPicture' ? 'active' : ''}
+            onClick={() => switchTask('readWordPicture')}
+            data-testid="task-read-word-picture"
+          >
+            Прочитай слово
+          </button>
         </nav>
         {taskType === 'pickSyllable' && (
           <>
@@ -110,6 +119,9 @@ export default function App() {
         )}
         {currentRound.type === 'pairSyllable' && (
           <PairSyllableRoundContainer key={roundKey} />
+        )}
+        {currentRound.type === 'readWordPicture' && (
+          <ReadWordPictureRoundContainer key={roundKey} />
         )}
       </main>
     </div>

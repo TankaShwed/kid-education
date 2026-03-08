@@ -43,7 +43,6 @@ export interface PairSyllableRoundViewProps {
 }
 
 export function PairSyllableRoundView({
-  round,
   phase,
   letters,
   formedSyllables,

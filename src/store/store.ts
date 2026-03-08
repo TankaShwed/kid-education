@@ -11,11 +11,13 @@ import {
 } from '@/domain/rounds';
 import { createClassifyLetterRound } from '@/tasks/classify-letter/rounds';
 import { createPairSyllableRound } from '@/tasks/pair-syllable/rounds';
+import { createReadWordPictureRound } from '@/tasks/read-word-picture/rounds';
 import { sessionSlice } from './sessionSlice';
 import { pickSyllableSlice } from '@/tasks/pick-syllable/pickSyllableSlice';
 import { composeSyllableSlice } from '@/tasks/compose-syllable/composeSyllableSlice';
 import { classifyLetterSlice } from '@/tasks/classify-letter/classifyLetterSlice';
 import { pairSyllableSlice } from '@/tasks/pair-syllable';
+import { readWordPictureSlice } from '@/tasks/read-word-picture';
 import { rootSaga } from './sagas/rootSaga';
 import type { TTSProvider } from '@/domain/tts';
 
@@ -29,6 +31,9 @@ function createRound(taskType: TaskType, difficulty: DifficultyLevel): Round {
   if (taskType === 'pairSyllable') {
     return createPairSyllableRound();
   }
+  if (taskType === 'readWordPicture') {
+    return createReadWordPictureRound();
+  }
   return createComposeSyllableRound();
 }
 
@@ -41,6 +46,7 @@ export const store = configureStore({
     composeSyllable: composeSyllableSlice.reducer,
     classifyLetter: classifyLetterSlice.reducer,
     pairSyllable: pairSyllableSlice.reducer,
+    readWordPicture: readWordPictureSlice.reducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({ thunk: true }).concat(sagaMiddleware),
@@ -56,6 +62,7 @@ export function createStoreForStory(tts: TTSProvider) {
       composeSyllable: composeSyllableSlice.reducer,
       classifyLetter: classifyLetterSlice.reducer,
       pairSyllable: pairSyllableSlice.reducer,
+      readWordPicture: readWordPictureSlice.reducer,
     },
     middleware: (getDefaultMiddleware) =>
       getDefaultMiddleware({ thunk: true }).concat(storySagaMiddleware),
@@ -83,6 +90,8 @@ export const nextRound = (): AppThunk => (dispatch, getState) => {
     dispatch(classifyLetterSlice.actions.reset(round));
   } else if (round.type === 'pairSyllable') {
     dispatch(pairSyllableSlice.actions.reset(round));
+  } else if (round.type === 'readWordPicture') {
+    dispatch(readWordPictureSlice.actions.reset(round));
   } else {
     dispatch(composeSyllableSlice.actions.reset(round));
   }

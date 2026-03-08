@@ -30,16 +30,22 @@ import type {
   PairSyllableTaskConfig,
   PairSyllableRound,
 } from '@/tasks/pair-syllable/types';
+import type {
+  ReadWordPictureTaskConfig,
+  ReadWordPictureRound,
+} from '@/tasks/read-word-picture/types';
 
 export type { ClassifyLetterTaskConfig, ClassifyLetterRound };
 export type { PairSyllableTaskConfig, PairSyllableRound };
+export type { ReadWordPictureTaskConfig, ReadWordPictureRound };
 
 /** Общий тип конфигурации задания (расширяется другими типами) */
 export type TaskConfig =
   | PickSyllableTaskConfig
   | ComposeSyllableTaskConfig
   | ClassifyLetterTaskConfig
-  | PairSyllableTaskConfig;
+  | PairSyllableTaskConfig
+  | ReadWordPictureTaskConfig;
 
 /** Идентификатор типа задания для микса в будущем */
 export type TaskType = TaskConfig['type'];
@@ -66,7 +72,8 @@ export type Round =
   | PickSyllableRound
   | ComposeSyllableRound
   | ClassifyLetterRound
-  | PairSyllableRound;
+  | PairSyllableRound
+  | ReadWordPictureRound;
 
 /** Результат попытки в раунде */
 export type AttemptResult =

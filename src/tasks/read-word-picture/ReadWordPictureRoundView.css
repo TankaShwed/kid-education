@@ -1,0 +1,122 @@
+/* Стили задания «Прочитай слово и выбери картинку» */
+
+.read-word-picture-round {
+  text-align: center;
+}
+
+.read-word-picture-round .start-button {
+  padding: 1rem 2rem;
+  font-size: 1.25rem;
+  font-weight: 600;
+  border: 2px solid #333;
+  border-radius: 12px;
+  background: #e8f4fc;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.read-word-picture-round .start-button:hover {
+  background: #cce8f9;
+}
+
+.read-word-picture-word-wrap {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 0.25rem;
+  margin-bottom: 1rem;
+}
+
+.read-word-picture-word {
+  display: inline-flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.25rem;
+  justify-content: center;
+}
+
+.read-word-picture-syllable-chip,
+.read-word-picture-letter-single {
+  display: inline-flex;
+  align-items: center;
+}
+
+.read-word-picture-word .letter-chip {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 2rem;
+  height: 2.25rem;
+  padding: 0 0.4rem;
+  font-size: 1.5rem;
+  font-weight: 700;
+  border: 2px solid #333;
+}
+
+.read-word-picture-word .letter-chip.consonant {
+  background: rgba(0, 80, 180, 0.9);
+  color: #fff;
+  border-color: rgba(0, 60, 140, 0.8);
+  border-radius: 10px 0 0 10px;
+}
+
+.read-word-picture-word .letter-chip.vowel {
+  background: rgba(200, 50, 50, 0.9);
+  color: #fff;
+  border-color: rgba(180, 40, 40, 0.8);
+  border-radius: 0 10px 10px 0;
+}
+
+.read-word-picture-word .read-word-picture-letter-single.letter-chip {
+  border-radius: 10px;
+}
+
+.read-word-picture-round .read-word-button {
+  padding: 0.6rem 1.25rem;
+  font-size: 1.1rem;
+  font-weight: 600;
+  border: 2px solid #333;
+  border-radius: 10px;
+  background: #f0f8ff;
+  cursor: pointer;
+  margin-bottom: 1.25rem;
+  transition: background 0.15s;
+}
+
+.read-word-picture-round .read-word-button:hover {
+  background: #d0e8ff;
+}
+
+.read-word-picture-options {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  justify-content: center;
+}
+
+.read-word-picture-option {
+  padding: 1rem 1.5rem;
+  font-size: 1.1rem;
+  font-weight: 600;
+  border: 2px solid #333;
+  border-radius: 12px;
+  background: #fff;
+  cursor: pointer;
+  transition: background 0.15s, box-shadow 0.15s;
+}
+
+.read-word-picture-option:hover:not(:disabled) {
+  background: #f0f8ff;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.read-word-picture-option:disabled {
+  cursor: default;
+  opacity: 0.9;
+}
+
+.read-word-picture-hint {
+  margin-top: 0.75rem;
+  color: #666;
+  font-size: 0.95rem;
+}
