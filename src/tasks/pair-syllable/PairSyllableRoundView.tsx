@@ -1,4 +1,4 @@
-import { useState, useCallback, useRef, useLayoutEffect } from 'react';
+import { useState, useCallback, useRef, useEffect } from 'react';
 import type { PairSyllableRound } from './types';
 import type {
   PairSyllableLetter,
@@ -61,26 +61,38 @@ export function PairSyllableRoundView({
   onChooseSyllable,
 }: PairSyllableRoundViewProps) {
   const [draggingId, setDraggingId] = useState<string | null>(null);
-  const lettersContainerRef = useRef<HTMLDivElement>(null);
+  const lettersContainerRef = useRef<HTMLDivElement | null>(null);
+  const resizeObserverRef = useRef<ResizeObserver | null>(null);
   const [containerSize, setContainerSize] = useState({ w: 0, h: 0 });
   const [customPosition, setCustomPosition] = useState<{ xs: number; ys: number, xe: number, ye: number } | null>(null);
 
-  useLayoutEffect(() => {
-    const el = lettersContainerRef.current;
+  const measureContainer = useCallback((el: HTMLDivElement | null) => {
+    if (resizeObserverRef.current && lettersContainerRef.current !== el) {
+      resizeObserverRef.current.disconnect();
+      resizeObserverRef.current = null;
+    }
+    lettersContainerRef.current = el;
     if (!el) return;
-    const update = () =>
-      setContainerSize({ w: el.clientWidth, h: el.clientHeight });
-    update();
-    const ro = new ResizeObserver(update);
-    ro.observe(el);
-    return () => ro.disconnect();
-  }, [phase, letters.length]);
+    const update = () => {
+      const w = el.clientWidth;
+      const h = el.clientHeight;
+      if (w > 0 && h > 0) setContainerSize({ w, h });
+    };
+    requestAnimationFrame(update);
+    resizeObserverRef.current = new ResizeObserver(update);
+    resizeObserverRef.current.observe(el);
+  }, []);
+
+  useEffect(() => () => {
+    resizeObserverRef.current?.disconnect();
+    resizeObserverRef.current = null;
+  }, []);
 
   const getDropCoords = useCallback((e: React.DragEvent) => {
     const container = lettersContainerRef.current;
     if (!container) return { dropX: 0, dropY: 0, width_percent: 0, height_percent: 0 };
     const rect = container.getBoundingClientRect();
-    const {clientWidth, clientHeight} = e.target as HTMLElement;
+    const { clientWidth, clientHeight } = e.target as HTMLElement;
     return {
       dropX: ((e.clientX - rect.left) / rect.width) * 100,
       dropY: ((e.clientY - rect.top) / rect.height) * 100,
@@ -183,7 +195,7 @@ export function PairSyllableRoundView({
       {phase === 'pairing' && (
         <>
           <div
-            ref={lettersContainerRef}
+            ref={measureContainer}
             className="pair-syllable-letters"
             data-testid="pair-syllable-letters"
             onDragOver={preventDefault}

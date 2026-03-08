@@ -9,10 +9,11 @@ export function flyPosition(
   ): { x: number; y: number } {
   if (!customPosition || letter.id !== selectLetterId || selectLetterId === null)
     return letter.position;
+  if (clientWidth <= 0 || clientHeight <= 0) return letter.position;
 
   const dx = customPosition.xe - customPosition.xs;
   const dy = customPosition.ye - customPosition.ys;
-  const x = letter.position.x + dx * 100 / clientWidth;
-  const y = letter.position.y + dy * 100 / clientHeight;
+  const x = letter.position.x + (dx * 100) / clientWidth;
+  const y = letter.position.y + (dy * 100) / clientHeight;
   return { x, y };
 }
