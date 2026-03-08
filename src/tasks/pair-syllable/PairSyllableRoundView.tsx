@@ -11,14 +11,6 @@ import { Syllable } from '@/domain/types';
 
 const PAYLOAD_KEY = 'application/json';
 
-/** 1x1 прозрачный пиксель — убирает тень/ghost при перетаскивании */
-const EMPTY_DRAG_IMAGE: HTMLImageElement = (() => {
-  const img = document.createElement('img');
-  img.src =
-    'data:image/gif;base64,R0lGOODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7';
-  return img;
-})();
-
 /**
  * Сырые данные дропа: куда и на что отпустили (targetId = null — в пустое место).
  */
@@ -112,7 +104,6 @@ export function PairSyllableRoundView({
         JSON.stringify({ letterId: letter.id, letter: letter.letter })
       );
       e.dataTransfer.effectAllowed = 'move';
-      e.dataTransfer.setDragImage(EMPTY_DRAG_IMAGE, 0, 0);
     },
     []
   );
