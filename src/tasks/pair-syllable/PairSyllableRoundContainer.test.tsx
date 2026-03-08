@@ -119,8 +119,8 @@ describe('PairSyllable task', () => {
           store.dispatch(
             pairSyllableSlice.actions.placeLetter({
               draggedId: letter.id,
-              dropX: 50,
-              dropY: 40,
+              dropX: 95,
+              dropY: 95,
               width_percent: 10,
               height_percent: 10,
             })
@@ -132,7 +132,7 @@ describe('PairSyllable task', () => {
         const updated = store.getState().pairSyllable.letters.find(
           (l) => l.id === letterId
         );
-        expect(updated?.position).toEqual({ x: 50, y: 40 });
+        expect(updated?.position).toEqual({ x: 95, y: 95 });
       });
     });
 
