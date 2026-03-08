@@ -1,5 +1,13 @@
 import '@testing-library/jest-dom/vitest';
 
+/** jsdom не предоставляет ResizeObserver — мок для компонентов, которые его используют. */
+class ResizeObserverMock {
+  observe = () => {};
+  disconnect = () => {};
+  unobserve = () => {};
+}
+globalThis.ResizeObserver = ResizeObserverMock as unknown as typeof ResizeObserver;
+
 /** Подавляем известное предупреждение React при async act() в Vitest (флаг IS_REACT_ACT_ENVIRONMENT не подхватывается для бандла React из node_modules). */
 const suppressActEnvWarning = (method: 'warn' | 'error') => {
   const original = console[method];
