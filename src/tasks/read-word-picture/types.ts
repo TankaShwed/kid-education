@@ -7,7 +7,13 @@
 export interface PictureOption {
   id: string;
   alt: string;
+  url?: string;
 }
+
+export type TWordExample = PictureOption & {
+  word: string;
+  level: number;
+};
 
 /** Конфигурация задания «прочитай слово и выбери картинку» */
 export interface ReadWordPictureTaskConfig {

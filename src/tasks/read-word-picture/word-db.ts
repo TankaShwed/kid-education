@@ -1,0 +1,74 @@
+import { TWordExample } from "./types";
+
+export const wordDB: TWordExample[] = [
+  {
+    word: 'СОК',
+    level: 1,
+    id: 'sok',
+    alt: 'Сок',
+    url: 'https://example.com/sok.jpg',
+  },
+  {
+    word: 'ЛУК',
+    level: 1,
+    id: 'luk',
+    alt: 'Лук',
+    url: 'https://example.com/luk.jpg',
+  },
+  {
+    word: 'СТОЛ',
+    level: 2,
+    id: 'stol',
+    alt: 'Стол',
+    url: 'https://example.com/stol.jpg',
+  },
+  {
+    word: 'ДОМ',
+    level: 1,
+    id: 'dom',
+    alt: 'Дом',
+    url: 'https://example.com/dom.jpg',
+  },
+  {
+    word: 'КОТ',
+    level: 1,
+    id: 'kot',
+    alt: 'Кот',
+    url: 'https://example.com/kot.jpg',
+  },
+  {
+    word: 'ПОЛ',
+    level: 1,
+    id: 'pol',
+    alt: 'Пол',
+    url: 'https://example.com/pol.jpg',
+  },
+  {
+    word: 'МАТ',
+    level: 1,
+    id: 'mat',
+    alt: 'Мат',
+    url: 'https://example.com/mat.jpg',
+  },
+  {
+    word: 'БАЛ',
+    level: 1,
+    id: 'bal',
+    alt: 'Бал',
+    url: 'https://example.com/bal.jpg',
+  },
+  {
+    word: 'БОТ',
+    level: 1,
+    id: 'bot',
+    alt: 'Бот',
+    url: 'https://example.com/bot.jpg',
+  },
+  {
+    word: 'ВАТА',
+    level: 1,
+    id: 'vata',
+    alt: 'Вата',
+    url: 'https://example.com/vata.jpg',
+  },
+];

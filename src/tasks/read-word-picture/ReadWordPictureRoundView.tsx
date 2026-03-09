@@ -1,6 +1,6 @@
 import type { ReadWordPictureRound } from './types';
 import type { PictureOption } from './types';
-import { splitWordIntoParts } from '@/domain/wordSyllables';
+import { splitWordIntoParts } from '@/tasks/read-word-picture/wordSyllables';
 import { isVowel } from '@/domain/letters';
 import './ReadWordPictureRoundView.css';
 
