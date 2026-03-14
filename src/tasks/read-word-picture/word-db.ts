@@ -23,6 +23,13 @@ export const wordDB: TWordExample[] = [
     url: 'https://example.com/stol.jpg',
   },
   {
+    word: 'СЛОН',
+    level: 2,
+    id: 'slon',
+    alt: 'Слон',
+    url: '/word-img/elephant.png',
+  },
+  {
     word: 'ДОМ',
     level: 1,
     id: 'dom',
@@ -34,7 +41,7 @@ export const wordDB: TWordExample[] = [
     level: 1,
     id: 'kot',
     alt: 'Кот',
-    url: 'https://example.com/kot.jpg',
+    url: '/word-img/cat.png',
   },
   {
     word: 'ПОЛ',

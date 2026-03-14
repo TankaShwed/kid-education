@@ -26,13 +26,13 @@ function makeStoreWithRound(round: ReadWordPictureRound) {
 
 const defaultRound: ReadWordPictureRound = {
   type: 'readWordPicture',
-  word: 'ТОЛИК',
-  correctId: 'mama',
+  word: 'СЛОН',
+  correctId: 'slon',
   options: [
-    { id: 'mama', alt: 'Мама' },
-    { id: 'papa', alt: 'Папа' },
-    { id: 'sok', alt: 'Сок' },
+    { id: 'slon', alt: 'Слон' },
+    { id: 'kot', alt: 'Кот' },
     { id: 'dom', alt: 'Дом' },
+    { id: 'stol', alt: 'Стол' },
   ],
 };
 

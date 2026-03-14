@@ -3,6 +3,7 @@ import type { PictureOption } from './types';
 import { splitWordIntoParts } from '@/tasks/read-word-picture/wordSyllables';
 import { isVowel } from '@/domain/letters';
 import './ReadWordPictureRoundView.css';
+import { wordDB } from './word-db';
 
 /**
  * Пропсы презентационного компонента «Прочитай слово и выбери картинку».
@@ -113,18 +114,21 @@ export function ReadWordPictureRoundView({
         aria-label="Варианты картинок"
         data-testid="read-word-picture-options"
       >
-        {options.map((opt) => (
-          <button
-            key={opt.id}
-            type="button"
-            className="read-word-picture-option"
-            onClick={() => onChooseOption(opt.id)}
-            disabled={status !== 'idle'}
-            data-testid={`read-word-picture-option-${opt.id}`}
-          >
-            {opt.alt}
-          </button>
-        ))}
+        {options.map((opt) => {
+          const word = wordDB.find((w) => w.id === opt.id);
+          return (
+            <button
+              key={opt.id}
+              type="button"
+              className="read-word-picture-option"
+              onClick={() => onChooseOption(opt.id)}
+              disabled={status !== 'idle'}
+              data-testid={`read-word-picture-option-${opt.id}`}
+            >
+              {word?.url ? <img src={word.url} alt={opt.alt} /> : opt.alt}
+            </button>
+          )
+        })}
       </div>
       {!spoken && (
         <p className="read-word-picture-hint" data-testid="read-word-picture-hint">
