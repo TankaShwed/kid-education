@@ -32,7 +32,7 @@ const defaultRound: ReadWordPictureRound = {
     { id: 'slon', alt: 'Слон' },
     { id: 'kot', alt: 'Кот' },
     { id: 'dom', alt: 'Дом' },
-    { id: 'stol', alt: 'Стол' },
+    { id: 'luk', alt: 'Лук' },
   ],
 };
 

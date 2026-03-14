@@ -13,7 +13,7 @@ export const wordDB: TWordExample[] = [
     level: 1,
     id: 'luk',
     alt: 'Лук',
-    url: 'https://example.com/luk.jpg',
+    url: 'word-img/luk.png',
   },
   {
     word: 'СТОЛ',
